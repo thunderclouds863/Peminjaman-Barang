@@ -1,0 +1,39 @@
+[
+    {
+      "no": 1,
+      "nama_alat": "Pulse Meter",
+      "jenis_alat": "Fisiologi",
+      "harga": "Rp 10.000/minggu"
+    },
+    {
+      "no": 2,
+      "nama_alat": "Blood Pressure Monitor",
+      "jenis_alat": "Fisiologi",
+      "harga": "Rp 10.000/minggu"
+    },
+    {
+      "no": 3,
+      "nama_alat": "Infrared Ear Thermometer",
+      "jenis_alat": "Fisiologi",
+      "harga": "Rp 10.000/minggu"
+    },
+    {
+      "no": 4,
+      "nama_alat": "Hand Dynamometer",
+      "jenis_alat": "Fisiologi",
+      "harga": "Rp 10.000/minggu"
+    },
+    {
+      "no": 5,
+      "nama_alat": "Heart Rate Monitor (Polar Vantage V2)",
+      "jenis_alat": "Fisiologi",
+      "harga": "Rp 10.000/minggu"
+    },
+    {
+      "no": 6,
+      "nama_alat": "Electroencephalograph (EEG)",
+      "jenis_alat": "Fisiologi",
+      "harga": "Rp 15.000/minggu"
+    }
+  ]
+  
