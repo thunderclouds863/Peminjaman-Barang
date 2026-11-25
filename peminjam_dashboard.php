@@ -69,39 +69,22 @@ if ($result && $result->num_rows > 0) {
 
     <main class="app-main">
         <div class="page-header">
-            <div>
-                <div class="page-eyebrow"><i class="fas fa-microscope"></i> Katalog Inventaris</div>
-                <h1 class="page-title">Alat Tersedia untuk Dipinjam</h1>
-                <p class="page-subtitle">Pilih peralatan laboratorium yang Anda butuhkan dan tambahkan ke keranjang peminjaman. Tarif dihitung per minggu.</p>
-            </div>
+            <h1 class="page-title">Katalog Alat</h1>
             <div class="page-actions">
                 <a href="shopping-cart.php" class="btn-brand">
-                    <i class="fas fa-cart-shopping"></i> Lihat Keranjang
+                    <i class="fas fa-cart-shopping"></i> Keranjang
                 </a>
             </div>
         </div>
 
-        <section class="stats-grid" aria-label="Statistik Katalog">
-            <div class="stat-card">
-                <div>
-                    <div class="stat-label">Jenis Alat Tersedia</div>
-                    <div class="stat-value"><?php echo count($items); ?></div>
-                </div>
-                <div class="stat-icon crimson"><i class="fas fa-boxes-stacked"></i></div>
-            </div>
-            <div class="stat-card">
-                <div>
-                    <div class="stat-label">Total Unit di Gudang</div>
-                    <div class="stat-value"><?php echo $total_stock; ?></div>
-                </div>
-                <div class="stat-icon emerald"><i class="fas fa-cubes"></i></div>
-            </div>
-        </section>
+        <div class="metric-strip" aria-label="Statistik Katalog">
+            <div class="metric-chip"><span class="dot crimson"></span><strong><?php echo count($items); ?></strong> Jenis Alat</div>
+            <div class="metric-chip"><span class="dot emerald"></span><strong><?php echo $total_stock; ?></strong> Total Unit</div>
+        </div>
 
         <section class="surface-card">
             <div class="surface-card-header">
-                <h2 class="surface-card-title"><i class="fas fa-list"></i> Daftar Peralatan</h2>
-                <div class="search-field">
+                <div class="search-field" style="max-width: 380px;">
                     <i class="fas fa-magnifying-glass"></i>
                     <input type="text" id="searchInput" placeholder="Cari nama alat atau deskripsi...">
                 </div>

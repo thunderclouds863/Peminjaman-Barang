@@ -116,11 +116,7 @@ if ($items_result) {
 
   <main class="app-main">
     <div class="page-header">
-      <div>
-        <div class="page-eyebrow"><i class="fas fa-boxes-stacked"></i> Inventaris Gudang</div>
-        <h1 class="page-title">Inventory Management</h1>
-        <p class="page-subtitle">Kelola data alat laboratorium, tarif sewa mingguan, dan ketersediaan stok secara terpusat.</p>
-      </div>
+      <h1 class="page-title">Inventory Management</h1>
       <div class="page-actions">
         <button type="button" class="btn-brand" onclick="togglePopup('add')">
           <i class="fas fa-plus"></i> Tambah Alat
@@ -128,34 +124,13 @@ if ($items_result) {
       </div>
     </div>
 
-    <section class="stats-grid" aria-label="Statistik Inventaris">
-      <div class="stat-card">
-        <div>
-          <div class="stat-label">Total Jenis Alat</div>
-          <div class="stat-value"><?php echo count($items); ?></div>
-        </div>
-        <div class="stat-icon crimson"><i class="fas fa-microscope"></i></div>
-      </div>
-      <div class="stat-card">
-        <div>
-          <div class="stat-label">Total Unit Tersedia</div>
-          <div class="stat-value"><?php echo $total_units; ?></div>
-        </div>
-        <div class="stat-icon emerald"><i class="fas fa-cubes"></i></div>
-      </div>
-      <div class="stat-card">
-        <div>
-          <div class="stat-label">Stok Menipis (&le; 2)</div>
-          <div class="stat-value"><?php echo $low_stock_count; ?></div>
-        </div>
-        <div class="stat-icon amber"><i class="fas fa-triangle-exclamation"></i></div>
-      </div>
-    </section>
+    <div class="metric-strip" aria-label="Statistik Inventaris">
+      <div class="metric-chip"><span class="dot crimson"></span><strong><?php echo count($items); ?></strong> Jenis Alat</div>
+      <div class="metric-chip"><span class="dot emerald"></span><strong><?php echo $total_units; ?></strong> Total Unit</div>
+      <div class="metric-chip"><span class="dot amber"></span><strong><?php echo $low_stock_count; ?></strong> Stok Menipis</div>
+    </div>
 
     <section class="surface-card">
-      <div class="surface-card-header">
-        <h2 class="surface-card-title"><i class="fas fa-table"></i> Daftar Alat Inventaris</h2>
-      </div>
       <div class="surface-card-body">
         <div class="dt-table-wrap">
           <table id="itemTable" class="dt-table">
