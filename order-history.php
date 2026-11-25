@@ -1,13 +1,11 @@
 <?php
 session_start();
 
-// Periksa apakah pengguna sudah login dan memiliki peran 'Peminjam Alat'
 if (!isset($_SESSION['role']) || $_SESSION['role'] != 'Peminjam Alat') {
     header("Location: index.php");
     exit;
 }
 
-// Koneksi database
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -15,14 +13,12 @@ $dbname = "peminjaman_alat";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Periksa koneksi
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 $user_id = $_SESSION['user_id'];
 
-// Query untuk mengambil data peminjaman pengguna
 $sql = "SELECT
             p.id AS peminjaman_id,
             p.created_at AS borrow_date,
@@ -42,11 +38,9 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $orders_result = $stmt->get_result();
 
-// Menangani aksi mark as 'Selesai'
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_completed'])) {
     $order_id = $_POST['order_id'];
 
-    // Update status menjadi 'Selesai'
     $update_query = "UPDATE peminjaman SET status = 'Selesai' WHERE id = ?";
     $update_stmt = $conn->prepare($update_query);
     $update_stmt->bind_param("i", $order_id);
@@ -55,424 +49,213 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_completed'])) {
     header("Location: order-history.php");
     exit;
 }
+
+$orders = [];
+$completed_count = 0;
+while ($order = $orders_result->fetch_assoc()) {
+    $orders[] = $order;
+    if ($order['loan_status'] === 'Selesai') {
+        $completed_count++;
+    }
+}
+
+function dt_history_status_class($status) {
+    $map = [
+        'Pending' => 'status-pending',
+        'Dikonfirmasi' => 'status-dikonfirmasi',
+        'Menunggu Pembayaran' => 'status-menunggu-pembayaran',
+        'Menunggu Konfirmasi Pembayaran' => 'status-menunggu-pembayaran',
+        'Pembayaran Dikonfirmasi' => 'status-siap-diambil',
+        'Siap Diambil' => 'status-siap-diambil',
+        'Sedang Dipinjam' => 'status-sedang-dipinjam',
+        'Menunggu Konfirmasi Pengembalian' => 'status-menunggu-pengembalian',
+        'Pengembalian Dikonfirmasi' => 'status-pengembalian-dikonfirmasi',
+        'Selesai' => 'status-selesai',
+    ];
+    return $map[$status] ?? 'status-pending';
+}
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order History - Peminjaman Alat</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Riwayat Peminjaman — D'Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <style>
-        html {
-            height: 100%;
-            margin-bottom: 190px;
-            padding: 0;
-            overflow-y: auto;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(45deg, #a0d9d2, #72c3b1, #63a6b1, #e1e8ee);
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
-            padding: 0;
-            align-items: center;
-            margin-bottom: 180px;
-            margin-top: 80px;
-        }
-
-        @keyframes gradientBG {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #5a9e97;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
-
-        header .logo a {
-            text-decoration: none;
-            color: white;
-        }
-
-        header .logo img {
-            height: 40px;
-            margin-right: 10px;
-        }
-
-        header .navbar a {
-            color: white;
-            text-decoration: none;
-            margin: 0 10px;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-
-        header .navbar a:hover {
-            color: #ff7043;
-            text-decoration: underline;
-        }
-
-        .container {
-            width: 100%;
-            margin: 20px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .table-responsive {
-    overflow-x: auto;
-    width: 100%;
-}
-
-table {
-    width: 100%;
-    max-width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 14px;
-    font-family: 'Poppins', sans-serif;
-    text-align: center;
-    background-color: #e1e8ee;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-th, td {
-    padding: 15px;
-    word-wrap: break-word;
-}
-
-
-        .action-button {
-            background-color: #ff7043;
-            color: white;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .action-button:hover {
-            background-color: #ff5722;
-            transform: scale(1.1);
-        }
-
-        th {
-            background-color: #5a9e97 !important;
-            color: white !important;
-            text-align: center !important;
-            text-transform: uppercase !important;
-            font-weight: bold !important;
-            padding: 15px !important;
-        }
-
-        thead {
-            text-align: center;
-        }
-
-        td {
-            padding: 12px;
-            color: #555;
-        }
-
-        tr {
-            border-bottom: 1px solid #ddd;
-        }
-
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 14px;
-            font-family: 'Poppins', sans-serif;
-            text-align: center;
-            background-color: #e1e8ee;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .floating-icons {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-
-        .floating-icons i {
-            font-size: 40px;
-            margin: 10px;
-            color: #ff7043;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .floating-icons i:hover {
-            transform: scale(1.2);
-        }
-
-        footer {
-            background-color: #5a9e97;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-
-        .hamburger {
-            display: none;
-            font-size: 24px;
-            color: white;
-            background: none;
-            border: none;
-            cursor: pointer;
-            margin-left: auto;
-        }
-
-        .search-bar {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .search-bar input {
-            width: 60%;
-            max-width: 500px;
-            padding: 10px;
-            border-radius: 25px;
-            border: 1px solid #ccc;
-            outline: none;
-            font-size: 14px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .search-bar input::placeholder {
-            color: #999;
-            text-align: center;
-        }
-
-        th,
-        td {
-            padding: 15px;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        tr {
-            border-bottom: 1px solid #ddd;
-        }
-
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .navbar {
-                display: none;
-                flex-direction: column;
-                width: 100%;
-                background-color: #5a9e97;
-            }
-
-            .navbar a {
-                padding: 10px 20px;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            }
-
-            .navbar a:last-child {
-                border-bottom: none;
-            }
-
-            .hamburger {
-                display: block;
-                align-items: flex-end;
-            }
-
-            .navbar.active {
-                display: flex;
-            }
-        }
-
-        .view-details-btn {
-            background-color: #ff9f1c;
-            color: white;
-            padding: 6px 10px;
-            border-radius: 5px;
-            text-decoration: none;
-            text-align: center;
-        }
-
-        .view-details-btn:hover {
-            background-color: #ff7043;
-        }
-
-        .action-btn {
-            background-color: #ff7043;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-        }
-
-        .action-btn:hover {
-            background-color: #ff5722;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body>
+<body class="app-body">
+    <header class="app-header">
+        <div class="app-header-inner">
+            <a href="home.php" class="brand-lockup">
+                <span class="brand-logo-wrap">
+                    <img src="logo.png" alt="Logo D'Tools">
+                </span>
+                <span class="brand-text">
+                    <span class="brand-title">D'Tools</span>
+                    <span class="brand-subtitle">Sistem Informasi Peminjaman Alat</span>
+                </span>
+            </a>
 
-<header>
-    <div class="logo">
-        <a href="home.php" style="display: flex; align-items: center; text-decoration: none;">
-            <img src="logo.png" alt="Logo" style="height: 40px; margin-right: 10px;">
-            <h1 style="font-size: 18px; font-weight: 600; color: white;">Sistem Informasi Peminjaman Alat</h1>
-        </a>
-    </div>
-    <button class="hamburger" id="hamburger" aria-label="Toggle Navigation">
-        <i class="fas fa-bars"></i>
-    </button>
-    <nav class="navbar" id="navbar">
-        <a href="home.php"><i class="fas fa-home"></i> Home</a>
-        <a href="peminjam_dashboard.php"><i class="fas fa-box"></i> Items</a>
-        <a href="order-history.php"><i class="fas fa-history"></i> History Peminjaman</a>
-        <a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
-    </nav>
-</header>
+            <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
 
-<div class="container">
-    <div class="content">
-        <h2>Your Order History</h2>
+            <nav class="app-nav" id="navbar" aria-label="Navigasi Peminjam">
+                <span class="role-pill">Peminjam Alat</span>
+                <a href="home.php"><i class="fas fa-house"></i> Home</a>
+                <a href="peminjam_dashboard.php"><i class="fas fa-boxes-stacked"></i> Katalog Alat</a>
+                <a href="shopping-cart.php"><i class="fas fa-cart-shopping"></i> Keranjang</a>
+                <a href="order-history.php" class="active"><i class="fas fa-clock-rotate-left"></i> Riwayat</a>
+                <a href="logout.php" class="nav-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
+            </nav>
+        </div>
+    </header>
 
-        <?php
-        if ($orders_result->num_rows > 0) {
-            echo "
-            <div class='table-responsive'>
-                <table id='orderTable' class='table table-striped table-bordered'>
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Date</th>
-                            <th>Total Amount</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>";
-            while ($order = $orders_result->fetch_assoc()) {
-                echo "<tr>
-                    <td>{$order['peminjaman_id']}</td>
-                    <td>{$order['borrow_date']}</td>
-                    <td>Rp " . number_format($order['total_amount'], 0, ',', '.') . "</td>
-                    <td><span class='status'>{$order['loan_status']}</span></td>
-                    <td>";
+    <main class="app-main">
+        <div class="page-header">
+            <div>
+                <div class="page-eyebrow"><i class="fas fa-clock-rotate-left"></i> Arsip Transaksi</div>
+                <h1 class="page-title">Riwayat Peminjaman</h1>
+                <p class="page-subtitle">Lihat seluruh catatan pengajuan peminjaman alat, total biaya, dan status penyelesaian Anda.</p>
+            </div>
+            <div class="page-actions">
+                <a href="peminjam_dashboard.php" class="btn-brand">
+                    <i class="fas fa-plus"></i> Pinjam Alat Baru
+                </a>
+            </div>
+        </div>
 
-                if ($order['loan_status'] == 'Siap Diambil' || $order['loan_status'] == 'Sedang Dipinjam') {
-                    echo "
-                        <form method='POST'>
-                            <input type='hidden' name='order_id' value='{$order['peminjaman_id']}'>
-                            <button type='submit' name='mark_completed' class='action-btn'>Selesai</button>
-                        </form>
-                    ";
-                } else {
-                    echo "<a href='order-details.php?peminjaman_id={$order['peminjaman_id']}' class='view-details-btn'>View Details</a>";
-                }
+        <section class="stats-grid" aria-label="Statistik Riwayat">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Total Riwayat</div>
+                    <div class="stat-value"><?php echo count($orders); ?></div>
+                </div>
+                <div class="stat-icon crimson"><i class="fas fa-receipt"></i></div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Transaksi Selesai</div>
+                    <div class="stat-value"><?php echo $completed_count; ?></div>
+                </div>
+                <div class="stat-icon emerald"><i class="fas fa-circle-check"></i></div>
+            </div>
+        </section>
 
-                echo "</td>
-                </tr>";
-            }
-            echo "
-                    </tbody>
-                </table>
-            </div>";
-        } else {
-            echo "<p>No orders found.</p>";
-        }
-        ?>
-    </div>
-</div>
+        <section class="surface-card">
+            <div class="surface-card-header">
+                <h2 class="surface-card-title"><i class="fas fa-list"></i> Daftar Riwayat</h2>
+            </div>
 
+            <div class="surface-card-body">
+                <?php if (count($orders) > 0): ?>
+                    <div class="dt-table-wrap">
+                        <table id="orderTable" class="dt-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Alat</th>
+                                    <th>Tanggal</th>
+                                    <th>Total Biaya</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($orders as $order): ?>
+                                    <?php $badgeClass = dt_history_status_class($order['loan_status']); ?>
+                                    <tr>
+                                        <td class="cell-mono">#<?php echo (int)$order['peminjaman_id']; ?></td>
+                                        <td class="cell-strong"><?php echo htmlspecialchars($order['item_name']); ?></td>
+                                        <td class="cell-mono"><?php echo htmlspecialchars($order['borrow_date']); ?></td>
+                                        <td class="cell-mono">Rp <?php echo number_format($order['total_amount'], 0, ',', '.'); ?></td>
+                                        <td>
+                                            <span class="status-badge <?php echo $badgeClass; ?>">
+                                                <?php echo htmlspecialchars($order['loan_status']); ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <?php if ($order['loan_status'] == 'Siap Diambil' || $order['loan_status'] == 'Sedang Dipinjam'): ?>
+                                                <form method="POST" class="cell-actions">
+                                                    <input type="hidden" name="order_id" value="<?php echo (int)$order['peminjaman_id']; ?>">
+                                                    <button type="submit" name="mark_completed" class="btn-soft-success btn-sm-action">
+                                                        <i class="fas fa-check"></i> Selesai
+                                                    </button>
+                                                    <a href="order-details.php?peminjaman_id=<?php echo (int)$order['peminjaman_id']; ?>" class="btn-outline-subtle btn-sm-action">
+                                                        Detail
+                                                    </a>
+                                                </form>
+                                            <?php else: ?>
+                                                <a href="order-details.php?peminjaman_id=<?php echo (int)$order['peminjaman_id']; ?>" class="btn-outline-subtle btn-sm-action">
+                                                    <i class="fas fa-eye"></i> Lihat Detail
+                                                </a>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else: ?>
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="fas fa-clock-rotate-left"></i></div>
+                        <h3>Belum Ada Riwayat Peminjaman</h3>
+                        <p>Transaksi peminjaman alat yang Anda ajukan akan tampil di sini.</p>
+                        <a href="peminjam_dashboard.php" class="btn-brand">Mulai Pinjam Alat</a>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </section>
+    </main>
 
-    <footer>
-        <p>&copy; 2024 <i class="fas fa-cogs"></i> Sistem Informasi Peminjaman Alat</p>
+    <footer class="app-footer">
+        <div class="app-footer-inner">
+            <p>&copy; 2024 D'Tools — Sistem Informasi Peminjaman Alat.</p>
+            <p>Portal Peminjam</p>
+        </div>
     </footer>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script>
-         $(document).ready(function() {
-        $('#orderTable').DataTable({
-            "paging": true,      // Enable pagination
-            "searching": true,   // Enable search
-            "ordering": true,    // Enable sorting
-            "info": true,        // Show info (e.g., "Showing 1 to 10 of 50 entries")
-            "lengthChange": true // Hide "Show entries" dropdown
+        $(document).ready(function () {
+            if ($('#orderTable').length) {
+                $('#orderTable').DataTable({
+                    paging: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    lengthChange: true,
+                    language: {
+                        search: "Cari:",
+                        lengthMenu: "Tampilkan _MENU_ entri",
+                        info: "Menampilkan _START_–_END_ dari _TOTAL_ riwayat",
+                        paginate: {
+                            next: "Berikutnya",
+                            previous: "Sebelumnya"
+                        }
+                    }
+                });
+            }
         });
-    });
+
         const hamburger = document.getElementById('hamburger');
         const navbar = document.getElementById('navbar');
-
         hamburger.addEventListener('click', () => {
-            navbar.classList.toggle('active');
-        });
-
-        $(document).ready(function() {
-            $('#myTable').DataTable();
+            const isOpen = navbar.classList.toggle('active');
+            hamburger.setAttribute('aria-expanded', isOpen);
         });
     </script>
-
 </body>
 
 </html>
 
-<?php
-$conn->close();
-?>
+<?php $conn->close(); ?>

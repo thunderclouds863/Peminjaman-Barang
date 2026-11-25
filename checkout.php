@@ -50,412 +50,194 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $price = $product['price'];
                 $quantity = $item['quantity'];
 
-                // Hitung durasi peminjaman dalam minggu
-                $created_at = date("Y-m-d"); // Asumsi tanggal dibuat saat ini
+                $created_at = date("Y-m-d");
                 $weeks = ceil((strtotime($return_at) - strtotime($created_at)) / (7 * 24 * 60 * 60));
 
-                // Hitung total harga untuk item ini
                 $total_price = $price * $quantity * $weeks;
 
-                // Masukkan detail peminjaman
                 $sql = "INSERT INTO detail_peminjaman (peminjaman_id, item_id, quantity, price, return_at) VALUES (?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("iiids", $peminjaman_id, $item_id, $quantity, $price, $return_at);
                 $stmt->execute();
 
-                // Tambahkan ke total amount
                 $total_amount += $total_price;
             }
         }
 
-        // Update total_amount di tabel peminjaman
         $sql = "UPDATE peminjaman SET total_amount = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("di", $total_amount, $peminjaman_id);
         $stmt->execute();
 
-        // Reset cart dan redirect
         $_SESSION['cart'] = [];
         header("Location: order-history.php");
         exit;
     }
 }
+
+$checkout_rows = [];
+if (!empty($cart_items)) {
+    foreach ($cart_items as $item_id => $item) {
+        $sql = "SELECT * FROM item WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $item_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result && $result->num_rows > 0) {
+            $product = $result->fetch_assoc();
+            $line_total = $product['price'] * $item['quantity'];
+            $total_amount += $line_total;
+            $checkout_rows[] = [
+                'name' => $product['name'],
+                'price' => $product['price'],
+                'quantity' => $item['quantity'],
+                'line_total' => $line_total,
+            ];
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <style>
-
-        .checkout-container {
-            padding: 30px;
-            background-color: white;
-            max-width: 800px;
-            margin: 30px auto;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-
-        .checkout-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-        }
-
-        .checkout-form input[type="date"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-
-        .checkout-form button {
-            background-color: #ff7043;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            border: none;
-            width: 100%;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        html {
-            height: 100%;
-            margin-bottom: 90px;
-            padding: 0;
-            overflow-y: auto;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(45deg, #a0d9d2, #72c3b1, #63a6b1, #e1e8ee);
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
-            padding: 0;
-            align-items: center;
-            margin-bottom: 80px;
-            margin-top: 80px;
-        }
-
-        @keyframes gradientBG {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #5a9e97;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
-
-        header .logo a {
-            text-decoration: none;
-            color: white;
-        }
-
-        header .logo img {
-            height: 40px;
-            margin-right: 10px;
-        }
-
-        header .navbar a {
-            color: white;
-            text-decoration: none;
-            margin: 0 10px;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-
-        header .navbar a:hover {
-            color: #ff7043;
-            text-decoration: underline;
-        }
-
-        .container {
-            width: 100%;
-            margin: 20px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .action-button {
-            background-color: linear-gradient(135deg, #8fd9a8, #70c5b0);
-            color: white;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .action-button:hover {
-            background-color: #ff5722;
-            transform: scale(1.1);
-        }
-
-        th {
-            background-color: #5a9e97 !important;
-            color: white !important;
-            text-align: center !important;
-            text-transform: uppercase !important;
-            font-weight: bold !important;
-            padding: 15px !important;
-        }
-
-        thead {
-            text-align: center;
-        }
-
-        td {
-            padding: 12px;
-            color: #555;
-        }
-
-        tr {
-            border-bottom: 1px solid #ddd;
-        }
-
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 14px;
-            font-family: 'Poppins', sans-serif;
-            text-align: center;
-            background-color: #e1e8ee;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .floating-icons {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-
-        .floating-icons i {
-            font-size: 40px;
-            margin: 10px;
-            color: #ff7043;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .floating-icons i:hover {
-            transform: scale(1.2);
-        }
-
-        footer {
-            background-color: #5a9e97;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-
-        .hamburger {
-            display: none;
-            font-size: 24px;
-            color: white;
-            background: none;
-            border: none;
-            cursor: pointer;
-            margin-left: auto;
-        }
-
-        .search-bar {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .search-bar input {
-            width: 60%;
-            max-width: 500px;
-            padding: 10px;
-            border-radius: 25px;
-            border: 1px solid #ccc;
-            outline: none;
-            font-size: 14px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .search-bar input::placeholder {
-            color: #999;
-            text-align: center;
-        }
-
-        th,
-        td {
-            padding: 15px;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        tr {
-            border-bottom: 1px solid #ddd;
-        }
-
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .navbar {
-                display: none;
-                flex-direction: column;
-                width: 100%;
-                background-color: #5a9e97;
-            }
-
-            .navbar a {
-                padding: 10px 20px;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            }
-
-            .navbar a:last-child {
-                border-bottom: none;
-            }
-
-            .hamburger {
-                display: block;
-                align-items: flex-end;
-            }
-
-            .navbar.active {
-                display: flex;
-            }
-        }
-
-
-    </style>
+    <title>Checkout Peminjaman — D'Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body>
+<body class="app-body">
+    <header class="app-header">
+        <div class="app-header-inner">
+            <a href="home.php" class="brand-lockup">
+                <span class="brand-logo-wrap">
+                    <img src="logo.png" alt="Logo D'Tools">
+                </span>
+                <span class="brand-text">
+                    <span class="brand-title">D'Tools</span>
+                    <span class="brand-subtitle">Sistem Informasi Peminjaman Alat</span>
+                </span>
+            </a>
 
-<header>
-    <div class="logo">
-        <a href="home.php" style="display: flex; align-items: center; text-decoration: none;">
-            <img src="logo.png" alt="Logo" style="height: 40px; margin-right: 10px;">
-            <h1 style="font-size: 18px; font-weight: 600; color: white;">Sistem Informasi Peminjaman Alat</h1>
-        </a>
-    </div>
-    <button class="hamburger" id="hamburger" aria-label="Toggle Navigation">
-        <i class="fas fa-bars"></i>
-    </button>
-    <nav class="navbar" id="navbar">
-        <a href="home.php"><i class="fas fa-home"></i> Home</a>
-        <a href="peminjam_dashboard.php"><i class="fas fa-box"></i> Items</a>
-        <a href="order-history.php"><i class="fas fa-history"></i> History Peminjaman</a>
-        <a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
-    </nav>
-</header>
+            <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
 
-    <div class="checkout-container">
-        <h2>Detail Peminjaman</h2>
-        <?php
-        if (!empty($cart_items)) {
-            foreach ($cart_items as $item_id => $item) {
-                $sql = "SELECT * FROM item WHERE id = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $item_id);
-                $stmt->execute();
-                $result = $stmt->get_result();
+            <nav class="app-nav" id="navbar" aria-label="Navigasi Peminjam">
+                <span class="role-pill">Peminjam Alat</span>
+                <a href="home.php"><i class="fas fa-house"></i> Home</a>
+                <a href="peminjam_dashboard.php"><i class="fas fa-boxes-stacked"></i> Katalog Alat</a>
+                <a href="shopping-cart.php" class="active"><i class="fas fa-cart-shopping"></i> Keranjang</a>
+                <a href="order-history.php"><i class="fas fa-clock-rotate-left"></i> Riwayat</a>
+                <a href="logout.php" class="nav-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
+            </nav>
+        </div>
+    </header>
 
-                if ($result && $result->num_rows > 0) {
-                    $product = $result->fetch_assoc();
-                    $total_amount += $product['price'] * $item['quantity'];
-                    echo "<div class='checkout-item'>
-                            <h3>{$product['name']}</h3>
-                            <p>Rp " . number_format($product['price'], 0, ',', '.') . " x {$item['quantity']}</p>
-                          </div>";
-                }
-            }
-        } else {
-            echo "<p>Your cart is empty.</p>";
-        }
-        ?>
-        <div class="total-price">Total Price: Rp <?php echo number_format($total_amount, 0, ',', '.'); ?></div>
+    <main class="app-main">
+        <div class="page-header">
+            <div>
+                <div class="page-eyebrow"><i class="fas fa-calendar-check"></i> Finalisasi Pengajuan</div>
+                <h1 class="page-title">Checkout Peminjaman</h1>
+                <p class="page-subtitle">Periksa kembali daftar alat dan tentukan tanggal pengembalian untuk menyelesaikan pengajuan.</p>
+            </div>
+            <div class="page-actions">
+                <a href="shopping-cart.php" class="btn-outline-subtle">
+                    <i class="fas fa-arrow-left"></i> Kembali ke Keranjang
+                </a>
+            </div>
+        </div>
 
-        <h2>Return Date</h2>
-        <form action="checkout.php" method="POST" class="checkout-form">
-            <label for="return_at">Select Return Date:</label>
-            <input type="date" id="return_at" name="return_at" required>
-            <button type="submit">Checkout</button>
-        </form>
-    </div>
+        <div class="checkout-steps" aria-label="Tahapan Peminjaman">
+            <div class="checkout-step done"><span class="step-dot"><i class="fas fa-check"></i></span> Pilih Alat</div>
+            <span class="step-sep"></span>
+            <div class="checkout-step done"><span class="step-dot"><i class="fas fa-check"></i></span> Keranjang</div>
+            <span class="step-sep"></span>
+            <div class="checkout-step active"><span class="step-dot">3</span> Tanggal Kembali & Checkout</div>
+        </div>
 
-    <footer>
-        <p>&copy; 2024 Sistem Peminjaman Alat. All Rights Reserved.</p>
+        <div class="split-layout">
+            <section class="surface-card">
+                <div class="surface-card-header">
+                    <h2 class="surface-card-title"><i class="fas fa-list-check"></i> Detail Alat Dipinjam</h2>
+                </div>
+                <?php if (!empty($checkout_rows)): ?>
+                    <div class="cart-list">
+                        <?php foreach ($checkout_rows as $item): ?>
+                            <div class="cart-row">
+                                <div class="cart-row-info">
+                                    <h3><?php echo htmlspecialchars($item['name']); ?></h3>
+                                    <p class="cart-row-price">Rp <?php echo number_format($item['price'], 0, ',', '.'); ?> &times; <?php echo (int)$item['quantity']; ?> unit</p>
+                                </div>
+                                <div class="cell-mono" style="font-weight: 700;">
+                                    Rp <?php echo number_format($item['line_total'], 0, ',', '.'); ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="fas fa-cart-shopping"></i></div>
+                        <h3>Keranjang Kosong</h3>
+                        <p>Tambahkan alat terlebih dahulu sebelum melakukan checkout.</p>
+                        <a href="peminjam_dashboard.php" class="btn-brand">Lihat Katalog Alat</a>
+                    </div>
+                <?php endif; ?>
+            </section>
+
+            <aside class="surface-card">
+                <div class="surface-card-header">
+                    <h2 class="surface-card-title"><i class="fas fa-calendar-days"></i> Jadwal Pengembalian</h2>
+                </div>
+                <div class="surface-card-body">
+                    <div class="summary-line">
+                        <span>Tarif Dasar / Minggu</span>
+                        <span class="cell-mono">Rp <?php echo number_format($total_amount, 0, ',', '.'); ?></span>
+                    </div>
+
+                    <form action="checkout.php" method="POST" style="margin-top: 16px;">
+                        <div class="form-group">
+                            <label for="return_at" class="form-label-dt">Pilih Tanggal Pengembalian</label>
+                            <input type="date" id="return_at" name="return_at" class="form-control-dt" min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>" required>
+                        </div>
+
+                        <p style="font-size: 12.5px; color: var(--ink-500); margin: 0 0 18px;">
+                            Biaya sewa dihitung per kelipatan 7 hari sejak tanggal pengajuan hari ini.
+                        </p>
+
+                        <button type="submit" class="btn-brand" style="width: 100%; padding: 12px 16px;" <?php echo empty($checkout_rows) ? 'disabled' : ''; ?>>
+                            <i class="fas fa-check-circle"></i> Ajukan Peminjaman
+                        </button>
+                    </form>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <div class="app-footer-inner">
+            <p>&copy; 2024 D'Tools — Sistem Informasi Peminjaman Alat. All Rights Reserved.</p>
+            <p>Portal Peminjam</p>
+        </div>
     </footer>
 
     <script>
         const hamburger = document.getElementById('hamburger');
         const navbar = document.getElementById('navbar');
-
         hamburger.addEventListener('click', () => {
-            navbar.classList.toggle('active');
-        });
-
-        $(document).ready(function() {
-            $('#myTable').DataTable();
+            const isOpen = navbar.classList.toggle('active');
+            hamburger.setAttribute('aria-expanded', isOpen);
         });
     </script>
-
 </body>
 
 </html>
 
-<?php
-$conn->close();
-?>
+<?php $conn->close(); ?>

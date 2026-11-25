@@ -16,7 +16,7 @@ if ($conn->connect_error) {
 // Handle form submission for registration
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
     $username = $_POST['username'];
-    $password =$_POST['password'];
+    $password = $_POST['password'];
     $role = $_POST['role'];
 
     // Check if username already exists
@@ -38,183 +38,118 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register - AS Berkah E-Commerce</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #f7f9fc;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 400px;
-      padding: 30px;
-      background: #ffffff;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-      border-radius: 15px;
-      text-align: center;
-      animation: fadeIn 0.8s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    h2 {
-      color: #ff8a65;
-      margin-bottom: 30px;
-      font-weight: 600;
-      font-size: 24px;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-    }
-
-    input, select, button {
-      margin: 15px 0;
-      padding: 15px;
-      font-size: 16px;
-      border: 1px solid #ffccbc;
-      border-radius: 8px;
-      background-color: #f9f9f9;
-      transition: all 0.3s ease-in-out;
-    }
-
-    input:focus, select:focus, button:focus {
-      outline: none;
-      border-color: #ff8a65;
-    }
-
-    button {
-      background-color: #ff8a65;
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      font-weight: 600;
-    }
-
-    button:hover {
-      background-color: #ff7043;
-    }
-
-    .link {
-      margin-top: 15px;
-      font-size: 14px;
-      color: #333;
-    }
-
-    .link a {
-      color: #ff8a65;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .link a:hover {
-      text-decoration: underline;
-    }
-
-    .popup-message {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #4caf50;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      animation: slideIn 0.5s ease-out, fadeOut 4s ease-in forwards;
-    }
-
-    .popup-message.error {
-      background-color: #f44336;
-    }
-
-    @keyframes slideIn {
-      from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
-      to { transform: translateX(-50%) translateY(0); opacity: 1; }
-    }
-
-    @keyframes fadeOut {
-      90% { opacity: 1; }
-      100% { opacity: 0; }
-    }
-
-    select {
-      background-color: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 16px;
-      color: #555;
-    }
-
-    select option {
-      background-color: #f9f9f9;
-    }
-
-    img {
-      width: 100px;
-      margin-bottom: 20px;
-    }
-
-  </style>
+  <title>Daftar Akun — D'Tools Sistem Informasi Peminjaman Alat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/theme.css">
 </head>
-<body>
 
-<!-- PHP Simulated Message -->
-<?php if (!empty($_GET['message'])): ?>
-  <div class="popup-message <?php echo htmlspecialchars($_GET['type'] ?? 'info'); ?>">
-    <?php echo htmlspecialchars($_GET['message']); ?>
-  </div>
-<?php endif; ?>
+<body class="auth-body">
+  <main class="auth-shell">
+    <section class="auth-brand-panel" aria-label="Pendaftaran D'Tools">
+      <div class="auth-brand-content">
+        <div class="auth-logo-badge">
+          <img src="logo.png" alt="Logo D'Tools">
+          <span>D'Tools Inventory</span>
+        </div>
 
-<div class="container">
-  <!-- Logo above the heading -->
-  <img src="logo.png" alt="Logo">
+        <h1>Buat Akun Peminjam Alat</h1>
+        <p class="auth-lead">
+          Daftarkan akun Anda untuk mulai mengajukan peminjaman peralatan laboratorium, melihat riwayat transaksi, dan memantau status pengembalian.
+        </p>
 
-  <h2>Register</h2>
-  <form method="POST" action="">
-    <select name="role" id="role" required>
-    <option value="" disabled selected>-- Select Role --</option>
-      <option value="Peminjam Alat">Peminjam Alat</option>
-    </select>
+        <ul class="auth-steps">
+          <li>
+            <span class="auth-step-icon"><i class="fas fa-user-plus"></i></span>
+            <span><strong>Registrasi Instan</strong> — Buat akun Peminjam Alat dalam beberapa detik.</span>
+          </li>
+          <li>
+            <span class="auth-step-icon"><i class="fas fa-cart-shopping"></i></span>
+            <span><strong>Keranjang Peminjaman</strong> — Pilih beberapa alat sekaligus dan tentukan tanggal pengembalian.</span>
+          </li>
+          <li>
+            <span class="auth-step-icon"><i class="fas fa-receipt"></i></span>
+            <span><strong>Riwayat Transparan</strong> — Semua detail biaya dan status tercatat rapi di akun Anda.</span>
+          </li>
+        </ul>
+      </div>
 
-    <input type="text" name="username" placeholder="Username" required>
-    <input type="password" name="password" placeholder="Password" required>
+      <div class="auth-brand-footer">
+        <span>D'Tools Lab Management</span>
+        <span>Peminjam Portal</span>
+      </div>
+    </section>
 
-    <button type="submit" name="register" value="register">Register</button>
-  </form>
+    <section class="auth-form-panel">
+      <div class="auth-mobile-logo">
+        <img src="logo.png" alt="Logo D'Tools">
+        <div class="brand-text">
+          <span class="brand-title">D'Tools</span>
+          <span class="brand-subtitle">Sistem Informasi Peminjaman Alat</span>
+        </div>
+      </div>
 
-  <div class="link">
-    <p>Already have an account? <a href="index.php">Login Here</a></p>
-  </div>
-</div>
+      <div class="auth-form-header">
+        <h2>Registrasi Akun</h2>
+        <p>Lengkapi data di bawah ini untuk mendaftar sebagai Peminjam Alat.</p>
+      </div>
 
-<script>
-  const roleSelect = document.getElementById('role');
+      <?php if (!empty($_GET['message'])): ?>
+        <?php $msgType = ($_GET['type'] ?? 'success') === 'error' ? 'error' : 'success'; ?>
+        <div class="alert-banner <?php echo $msgType; ?>" role="alert">
+          <i class="fas <?php echo $msgType === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'; ?>"></i>
+          <span><?php echo htmlspecialchars($_GET['message']); ?></span>
+        </div>
+      <?php endif; ?>
 
-  roleSelect.addEventListener('change', function () {
-    document.body.style.backgroundColor = this.value === 'Peminjam Alat' ? '#e3f2fd' :
-                                           '#fff3e0';
-  });
-</script>
+      <form method="POST" action="">
+        <div class="form-group">
+          <label class="form-label-dt" for="role">Peran Pengguna</label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-user-tag"></i>
+            <select name="role" id="role" class="form-control-dt" required>
+              <option value="" disabled selected>-- Pilih Role --</option>
+              <option value="Peminjam Alat">Peminjam Alat</option>
+            </select>
+          </div>
+        </div>
 
+        <div class="form-group">
+          <label class="form-label-dt" for="username">Username</label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-user"></i>
+            <input type="text" id="username" name="username" class="form-control-dt" placeholder="Buat username unik" autocomplete="username" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label-dt" for="password">Password</label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" name="password" class="form-control-dt" placeholder="Buat password" autocomplete="new-password" required>
+          </div>
+        </div>
+
+        <button type="submit" name="register" value="register" class="btn-brand auth-submit-btn">
+          <span>Daftar Sekarang</span>
+          <i class="fas fa-user-check"></i>
+        </button>
+      </form>
+
+      <div class="auth-switch-link">
+        Sudah punya akun? <a href="index.php">Masuk di sini</a>
+      </div>
+    </section>
+  </main>
 </body>
+
 </html>
 
 <?php $conn->close(); ?>
