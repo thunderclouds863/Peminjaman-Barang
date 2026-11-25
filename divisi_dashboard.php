@@ -1,127 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Divisi Alat Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-dyAg5H/ry4fvuKv5M0tUToE1OPnYl4dEeXZXJ3/ZIH3Jj3uT60/KFlhBRFI0VuA1RbZRCUSsO4OQ9xdZBC++qg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-  <style>
-    body {
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(90deg, #f9c9d0, #c6d8e4, #e1d8f1, #d3f2e1, #e5d5c0);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
-}
-
-@keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-    nav {
-      background-color: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    nav ul {
-      display: flex;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    nav ul li {
-      margin: 0 10px;
-    }
-
-    nav ul li a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      padding: 5px 10px;
-      display: flex;
-      align-items: center;
-      transition: background-color 0.3s ease;
-    }
-
-    nav ul li a i {
-      margin-right: 5px;
-    }
-
-    nav ul li a:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-      border-radius: 5px;
-    }
-
-    .container {
-      text-align: center;
-      padding: 50px;
-    }
-
-    h1 {
-      font-size: 2.5em;
-      color: rgba(0, 0, 0, 0.7);
-    }
-
-    p {
-      font-size: 1.2em;
-      color: rgba(0, 0, 0, 0.7);
-      margin: 20px auto;
-      max-width: 600px;
-    }
-
-    footer {
-      background-color: rgba(0, 0, 0, 0.7);
-      color: white;
-      text-align: center;
-      padding: 10px;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-    }
-  </style>
+  <title>Dashboard Divisi Alat — D'Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body>
-  <nav>
-  <div class="logo">
-        <a href="home.php" style="display: flex; align-items: center; text-decoration: none;">
-            <img src="logo.png" alt="Logo" style="height: 60px; margin-right: 10px;">
-            <h1 style="font-size: 18px; font-weight: 600; color: white;">Divisi Alat</h1>
-        </a>
+<body class="app-body">
+  <header class="app-header">
+    <div class="app-header-inner">
+      <a href="divisi_dashboard.php" class="brand-lockup">
+        <span class="brand-logo-wrap">
+          <img src="logo.png" alt="Logo D'Tools">
+        </span>
+        <span class="brand-text">
+          <span class="brand-title">D'Tools</span>
+          <span class="brand-subtitle">Operasional Divisi Alat</span>
+        </span>
+      </a>
+
+      <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <nav class="app-nav" id="navbar" aria-label="Navigasi Divisi Alat">
+        <span class="role-pill">Divisi Alat</span>
+        <a href="divisi_dashboard.php" class="active"><i class="fas fa-house"></i> Home</a>
+        <a href="inventory_management.php"><i class="fas fa-boxes-stacked"></i> Inventory</a>
+        <a href="order-management.php"><i class="fas fa-clipboard-check"></i> Peminjaman</a>
+        <a href="logout.php" class="nav-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
+      </nav>
     </div>
-    <ul>
-      <li><a href="divisi_dashboard.php"><i class="fas fa-home"></i> Home</a></li>
-      <li><a href="inventory_management.php"><i class="fas fa-boxes"></i> Inventory</a></li>
-      <li><a href="order-management.php"><i class="fas fa-list-alt"></i> Peminjaman</a></li>
-      <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-    </ul>
-  </nav>
+  </header>
 
-  <div class="container">
-    <h1>Selamat Datang, Divisi Alat!</h1>
-    <p>Sebagai Divisi Alat, Anda memiliki akses untuk mengelola inventaris, memantau peminjaman, dan memastikan alat tersedia dengan baik untuk peminjam. Silakan gunakan menu di atas untuk memulai tugas Anda.</p>
-  </div>
+  <main class="app-main">
+    <section class="hub-hero">
+      <div class="hub-hero-inner">
+        <div>
+          <div class="page-eyebrow" style="color: #fda4af;"><i class="fas fa-screwdriver-wrench"></i> Panel Operasional</div>
+          <h1>Selamat Datang, Divisi Alat!</h1>
+          <p>
+            Kelola katalog inventaris laboratorium, pantau ketersediaan stok unit, serta konfirmasi permintaan peminjaman dan pengembalian alat dengan cepat.
+          </p>
+        </div>
+        <div class="page-actions">
+          <a href="inventory_management.php" class="btn-brand">
+            <i class="fas fa-boxes-stacked"></i> Kelola Inventory
+          </a>
+          <a href="order-management.php" class="btn-outline-subtle" style="background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.22);">
+            <i class="fas fa-clipboard-check"></i> Cek Peminjaman
+          </a>
+        </div>
+      </div>
+    </section>
 
-  <footer>
-    <p>&copy; 2024 Sistem Informasi Peminjaman Alat. All Rights Reserved.</p>
+    <section class="hub-grid" aria-label="Menu Utama Divisi Alat">
+      <a href="inventory_management.php" class="hub-card">
+        <div>
+          <div class="hub-card-icon"><i class="fas fa-boxes-stacked"></i></div>
+          <h3 style="margin-top: 16px;">Manajemen Inventaris</h3>
+          <p>Tambahkan peralatan baru, perbarui deskripsi, tarif sewa mingguan, dan jumlah stok yang tersedia di gudang.</p>
+        </div>
+        <span class="hub-card-link">Buka Inventaris <i class="fas fa-arrow-right"></i></span>
+      </a>
+
+      <a href="order-management.php" class="hub-card">
+        <div>
+          <div class="hub-card-icon"><i class="fas fa-clipboard-check"></i></div>
+          <h3 style="margin-top: 16px;">Kelola Peminjaman & Pengembalian</h3>
+          <p>Verifikasi pengajuan peminjaman baru (stok otomatis berkurang) dan konfirmasi alat yang dikembalikan peminjam.</p>
+        </div>
+        <span class="hub-card-link">Lihat Daftar Peminjaman <i class="fas fa-arrow-right"></i></span>
+      </a>
+    </section>
+
+    <section aria-label="Alur Kerja Divisi Alat">
+      <h2 class="surface-card-title" style="margin-bottom: 14px;">
+        <i class="fas fa-route"></i> Alur Operasional Standar
+      </h2>
+      <div class="workflow-strip">
+        <div class="workflow-step">
+          <span class="workflow-step-num">01 / STOK</span>
+          <h4>Pastikan Katalog Akurat</h4>
+          <p>Perbarui stok dan kondisi alat di halaman Inventory sebelum periode peminjaman dimulai.</p>
+        </div>
+        <div class="workflow-step">
+          <span class="workflow-step-num">02 / KONFIRMASI</span>
+          <h4>Setujui Pengajuan Pending</h4>
+          <p>Konfirmasi pesanan baru agar peminjam dapat melanjutkan ke proses pembayaran ke Bendahara.</p>
+        </div>
+        <div class="workflow-step">
+          <span class="workflow-step-num">03 / PENGEMBALIAN</span>
+          <h4>Validasi Pengembalian</h4>
+          <p>Periksa kondisi fisik alat yang kembali lalu klik Konfirmasi Pengembalian untuk memulihkan stok.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="app-footer-inner">
+      <p>&copy; 2024 D'Tools — Sistem Informasi Peminjaman Alat. All Rights Reserved.</p>
+      <p>Portal Divisi Alat</p>
+    </div>
   </footer>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const navbar = document.getElementById('navbar');
+    hamburger.addEventListener('click', () => {
+      const isOpen = navbar.classList.toggle('active');
+      hamburger.setAttribute('aria-expanded', isOpen);
+    });
+  </script>
 </body>
 
 </html>

@@ -1,10 +1,4 @@
 <?php
-// session_start();
-// if (!isset($_SESSION['role']) || $_SESSION['role'] != 'Divisi Alat') {
-//     header("Location: index.php");
-//     exit();
-// }
-
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -19,13 +13,11 @@ if ($conn->connect_error) {
 if (isset($_GET['confirm_peminjaman'])) {
     $peminjaman_id = $_GET['confirm_peminjaman'];
 
-    // Update peminjaman status to 'Dikonfirmasi'
     $update_status = "UPDATE peminjaman SET status = 'Dikonfirmasi' WHERE id = ?";
     $stmt = $conn->prepare($update_status);
     $stmt->bind_param("i", $peminjaman_id);
     $stmt->execute();
 
-    // Decrease stock for each item in the peminjaman
     $peminjaman_items = "SELECT item_id, quantity FROM detail_peminjaman WHERE peminjaman_id = ?";
     $stmt = $conn->prepare($peminjaman_items);
     $stmt->bind_param("i", $peminjaman_id);
@@ -36,7 +28,6 @@ if (isset($_GET['confirm_peminjaman'])) {
         $item_id = $item['item_id'];
         $quantity = $item['quantity'];
 
-        // Update item stock
         $update_stock = "UPDATE item SET stock = stock - ? WHERE id = ?";
         $stmt = $conn->prepare($update_stock);
         $stmt->bind_param("ii", $quantity, $item_id);
@@ -50,7 +41,6 @@ if (isset($_GET['confirm_peminjaman'])) {
 if (isset($_GET['confirm_pengembalian'])) {
     $peminjaman_id = $_GET['confirm_pengembalian'];
 
-    // Decrease stock for each item in the peminjaman
     $peminjaman_items = "SELECT item_id, quantity FROM detail_peminjaman WHERE peminjaman_id = ?";
     $stmt = $conn->prepare($peminjaman_items);
     $stmt->bind_param("i", $peminjaman_id);
@@ -66,7 +56,6 @@ if (isset($_GET['confirm_pengembalian'])) {
         $item_id = $item['item_id'];
         $quantity = $item['quantity'];
 
-        // Update item stock
         $update_stock = "UPDATE item SET stock = stock + ? WHERE id = ?";
         $stmt = $conn->prepare($update_stock);
         $stmt->bind_param("ii", $quantity, $item_id);
@@ -82,216 +71,207 @@ $sql = "SELECT peminjaman.id, peminjaman.created_at, peminjaman.total_amount, pe
         JOIN users ON peminjaman.user_id = users.id
         ORDER BY peminjaman.created_at DESC";
 $result = $conn->query($sql);
+
+$orders = [];
+$pending_count = 0;
+$return_wait_count = 0;
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $orders[] = $row;
+        if ($row['status'] === 'Pending') {
+            $pending_count++;
+        }
+        if ($row['status'] === 'Menunggu Konfirmasi Pengembalian') {
+            $return_wait_count++;
+        }
+    }
+}
+
+function dt_order_status_class($status) {
+    $map = [
+        'Pending' => 'status-pending',
+        'Dikonfirmasi' => 'status-dikonfirmasi',
+        'Menunggu Pembayaran' => 'status-menunggu-pembayaran',
+        'Menunggu Konfirmasi Pembayaran' => 'status-menunggu-pembayaran',
+        'Pembayaran Dikonfirmasi' => 'status-siap-diambil',
+        'Siap Diambil' => 'status-siap-diambil',
+        'Sedang Dipinjam' => 'status-sedang-dipinjam',
+        'Menunggu Konfirmasi Pengembalian' => 'status-menunggu-pengembalian',
+        'Pengembalian Dikonfirmasi' => 'status-pengembalian-dikonfirmasi',
+        'Selesai' => 'status-selesai',
+    ];
+    return $map[$status] ?? 'status-pending';
+}
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peminjaman Management - Admin</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-
-    <style>
-             html {
-    height: 100%;
-    margin-bottom: 30%;
-    padding: 0;
-    overflow-y: auto;
-}
-body {
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(90deg, #f9c9d0, #c6d8e4, #e1d8f1, #d3f2e1, #e5d5c0);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
-}
-
-@keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-    nav {
-      background-color: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    nav ul {
-      display: flex;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    nav ul li {
-      margin: 0 10px;
-    }
-
-    nav ul li a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      padding: 5px 10px;
-      display: flex;
-      align-items: center;
-      transition: background-color 0.3s ease;
-    }
-
-    nav ul li a i {
-      margin-right: 5px;
-    }
-
-    nav ul li a:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-      border-radius: 5px;
-    }
-    footer {
-      background-color: rgba(0, 0, 0, 0.7);
-      color: white;
-      text-align: center;
-      padding: 10px;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-    }
-
-        .container {
-            width: 80%;
-            margin: 40px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .order-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .order-table th, .order-table td {
-            padding: 12px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
-
-        .order-table th {
-            background-color: #f1f1f1;
-            color: #333;
-        }
-
-        .order-table td .status {
-            font-weight: bold;
-            color: #4caf50;
-        }
-        .confirm-btn {
-            background: linear-gradient(to right, #a8e063, #56ab2f);
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.5s ease, transform 0.3s ease;
-        }
-
-        .confirm-btn:hover {
-            background: linear-gradient(to right, #56ab2f, #a8e063);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .confirm-btn:active {
-            transform: translateY(2px);
-        }
-
-        /* Center align the title of the table */
-        .order-table th {
-            text-align: center;
-        }
-
-    </style>
+    <title>Kelola Peminjaman — D'Tools Divisi Alat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/theme.css">
 </head>
-<body>
-<nav>
-  <div class="logo">
-        <a href="home.php" style="display: flex; align-items: center; text-decoration: none;">
-            <img src="logo.png" alt="Logo" style="height: 60px; margin-right: 10px;">
-            <h1 style="font-size: 18px; font-weight: 600; color: white;">Divisi Alat</h1>
-        </a>
-    </div>
-    <ul>
-      <li><a href="divisi_dashboard.php"><i class="fas fa-home"></i> Home</a></li>
-      <li><a href="inventory_management.php"><i class="fas fa-boxes"></i> Inventory</a></li>
-      <li><a href="order-management.php"><i class="fas fa-list-alt"></i> Peminjaman</a></li>
-      <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-    </ul>
-  </nav>
 
-  <div class="container">
-        <h2 style="text-align: center; color: #333;">Peminjaman List</h2>
-        <table id="orderTable" class="order-table">
-            <thead>
-                <tr>
-                    <th>Peminjaman ID</th>
-                    <th>User</th>
-                    <th>Date</th>
-                    <th>Total Amount</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<tr>
-                                <td>{$row['id']}</td>
-                                <td>{$row['username']}</td>
-                                <td>{$row['created_at']}</td>
-                                <td>Rp " . number_format($row['total_amount'], 0, ',', '.') . "</td>
-                                <td><span class='status'>{$row['status']}</span></td>
-                                <td>";
-                        if ($row['status'] == 'Pending') {
-                            echo "<a href='order-management.php?confirm_peminjaman={$row['id']}' class='confirm-btn'>Konfirmasi Peminjaman</a>";
-                        } else if ($row['status'] == 'Menunggu Konfirmasi Pengembalian') {
-                            echo "<a href='order-management.php?confirm_pengembalian={$row['id']}' class='confirm-btn'>Konfirmasi Pengembalian</a>";
-                        }
-                        echo "</td>
-                            </tr>";
+<body class="app-body">
+    <header class="app-header">
+        <div class="app-header-inner">
+            <a href="divisi_dashboard.php" class="brand-lockup">
+                <span class="brand-logo-wrap">
+                    <img src="logo.png" alt="Logo D'Tools">
+                </span>
+                <span class="brand-text">
+                    <span class="brand-title">D'Tools</span>
+                    <span class="brand-subtitle">Operasional Divisi Alat</span>
+                </span>
+            </a>
+
+            <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <nav class="app-nav" id="navbar" aria-label="Navigasi Divisi Alat">
+                <span class="role-pill">Divisi Alat</span>
+                <a href="divisi_dashboard.php"><i class="fas fa-house"></i> Home</a>
+                <a href="inventory_management.php"><i class="fas fa-boxes-stacked"></i> Inventory</a>
+                <a href="order-management.php" class="active"><i class="fas fa-clipboard-check"></i> Peminjaman</a>
+                <a href="logout.php" class="nav-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <div class="page-header">
+            <div>
+                <div class="page-eyebrow"><i class="fas fa-clipboard-check"></i> Persetujuan & Sirkulasi</div>
+                <h1 class="page-title">Daftar Peminjaman Alat</h1>
+                <p class="page-subtitle">Konfirmasi pengajuan peminjaman baru dan validasi pengembalian alat untuk memperbarui stok secara otomatis.</p>
+            </div>
+            <div class="page-actions">
+                <a href="inventory_management.php" class="btn-outline-subtle">
+                    <i class="fas fa-boxes-stacked"></i> Cek Stok Inventaris
+                </a>
+            </div>
+        </div>
+
+        <section class="stats-grid" aria-label="Ringkasan Peminjaman">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Total Transaksi</div>
+                    <div class="stat-value"><?php echo count($orders); ?></div>
+                </div>
+                <div class="stat-icon crimson"><i class="fas fa-list-check"></i></div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Menunggu Persetujuan</div>
+                    <div class="stat-value"><?php echo $pending_count; ?></div>
+                </div>
+                <div class="stat-icon amber"><i class="fas fa-clock"></i></div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Konfirmasi Pengembalian</div>
+                    <div class="stat-value"><?php echo $return_wait_count; ?></div>
+                </div>
+                <div class="stat-icon blue"><i class="fas fa-rotate-left"></i></div>
+            </div>
+        </section>
+
+        <section class="surface-card">
+            <div class="surface-card-header">
+                <h2 class="surface-card-title"><i class="fas fa-table-list"></i> Peminjaman List</h2>
+            </div>
+
+            <div class="surface-card-body">
+                <div class="dt-table-wrap">
+                    <table id="orderTable" class="dt-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Peminjam</th>
+                                <th>Tanggal Pengajuan</th>
+                                <th>Total Biaya</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($orders as $row): ?>
+                                <?php $badgeClass = dt_order_status_class($row['status']); ?>
+                                <tr>
+                                    <td class="cell-mono">#<?php echo (int)$row['id']; ?></td>
+                                    <td class="cell-strong"><?php echo htmlspecialchars($row['username']); ?></td>
+                                    <td class="cell-mono"><?php echo htmlspecialchars($row['created_at']); ?></td>
+                                    <td class="cell-mono">Rp <?php echo number_format((float)$row['total_amount'], 0, ',', '.'); ?></td>
+                                    <td>
+                                        <span class="status-badge <?php echo $badgeClass; ?>">
+                                            <?php echo htmlspecialchars($row['status']); ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php if ($row['status'] == 'Pending'): ?>
+                                            <a href="order-management.php?confirm_peminjaman=<?php echo (int)$row['id']; ?>" class="btn-brand btn-sm-action">
+                                                <i class="fas fa-check"></i> Konfirmasi Peminjaman
+                                            </a>
+                                        <?php elseif ($row['status'] == 'Menunggu Konfirmasi Pengembalian'): ?>
+                                            <a href="order-management.php?confirm_pengembalian=<?php echo (int)$row['id']; ?>" class="btn-soft-success btn-sm-action">
+                                                <i class="fas fa-rotate-left"></i> Konfirmasi Pengembalian
+                                            </a>
+                                        <?php else: ?>
+                                            <span style="color: var(--ink-400); font-size: 12.5px;">Tidak ada aksi</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <div class="app-footer-inner">
+            <p>&copy; 2024 D'Tools — Sistem Informasi Peminjaman Alat. All Rights Reserved.</p>
+            <p>Portal Divisi Alat</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#orderTable').DataTable({
+                order: [[0, 'desc']],
+                language: {
+                    search: "Cari:",
+                    lengthMenu: "Tampilkan _MENU_ entri",
+                    info: "Menampilkan _START_–_END_ dari _TOTAL_ peminjaman",
+                    emptyTable: "Belum ada data peminjaman.",
+                    paginate: {
+                        next: "Berikutnya",
+                        previous: "Sebelumnya"
                     }
-                } else {
-                    echo "<tr><td colspan='6'>No peminjaman found.</td></tr>";
                 }
-                ?>
-            </tbody>
-        </table>
-    </div>
-    <footer>
-    <p>&copy; 2024 Sistem Peminjaman Alat. All Rights Reserved.</p>
-</footer>
-<script>
-        $(document).ready(function() {
-            // Initialize DataTables
-            $('#orderTable').DataTable();
+            });
+        });
+
+        const hamburger = document.getElementById('hamburger');
+        const navbar = document.getElementById('navbar');
+        hamburger.addEventListener('click', () => {
+            const isOpen = navbar.classList.toggle('active');
+            hamburger.setAttribute('aria-expanded', isOpen);
         });
     </script>
 </body>
+
 </html>
 
-<?php
-$conn->close();
-?>
+<?php $conn->close(); ?>
