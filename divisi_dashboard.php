@@ -21,7 +21,7 @@
         </span>
         <span class="brand-text">
           <span class="brand-title">D'Tools</span>
-          <span class="brand-subtitle">Operasional Divisi Alat</span>
+          <span class="brand-subtitle">Divisi Alat</span>
         </span>
       </a>
 
@@ -40,74 +40,67 @@
   </header>
 
   <main class="app-main">
-    <section class="hub-hero">
-      <div class="hub-hero-inner">
-        <div>
-          <div class="page-eyebrow" style="color: #fda4af;"><i class="fas fa-screwdriver-wrench"></i> Panel Operasional</div>
+    <div class="ops-grid">
+      <section class="hub-hero" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
+        <div class="hub-hero-inner" style="display: block;">
           <h1>Selamat Datang, Divisi Alat!</h1>
-          <p>
-            Kelola katalog inventaris laboratorium, pantau ketersediaan stok unit, serta konfirmasi permintaan peminjaman dan pengembalian alat dengan cepat.
+          <p style="margin-top: 10px;">
+            Kelola inventaris, pantau peminjaman, dan pastikan ketersediaan alat untuk peminjam.
           </p>
         </div>
-        <div class="page-actions">
-          <a href="inventory_management.php" class="btn-brand">
-            <i class="fas fa-boxes-stacked"></i> Kelola Inventory
-          </a>
-          <a href="order-management.php" class="btn-outline-subtle" style="background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.22);">
-            <i class="fas fa-clipboard-check"></i> Cek Peminjaman
-          </a>
-        </div>
-      </div>
-    </section>
 
-    <section class="hub-grid" aria-label="Menu Utama Divisi Alat">
-      <a href="inventory_management.php" class="hub-card">
-        <div>
-          <div class="hub-card-icon"><i class="fas fa-boxes-stacked"></i></div>
-          <h3 style="margin-top: 16px;">Manajemen Inventaris</h3>
-          <p>Tambahkan peralatan baru, perbarui deskripsi, tarif sewa mingguan, dan jumlah stok yang tersedia di gudang.</p>
+        <div class="auth-visual-flow" style="margin-top: 28px;" aria-hidden="true">
+          <div class="flow-track">
+            <div class="flow-node">
+              <i class="fas fa-cubes"></i>
+              <span>Stok Alat</span>
+            </div>
+            <div class="flow-node">
+              <i class="fas fa-check-double"></i>
+              <span>Konfirmasi</span>
+            </div>
+            <div class="flow-node">
+              <i class="fas fa-box-open"></i>
+              <span>Dipinjam</span>
+            </div>
+            <div class="flow-node">
+              <i class="fas fa-rotate-left"></i>
+              <span>Kembali</span>
+            </div>
+          </div>
         </div>
-        <span class="hub-card-link">Buka Inventaris <i class="fas fa-arrow-right"></i></span>
-      </a>
+      </section>
 
-      <a href="order-management.php" class="hub-card">
-        <div>
-          <div class="hub-card-icon"><i class="fas fa-clipboard-check"></i></div>
-          <h3 style="margin-top: 16px;">Kelola Peminjaman & Pengembalian</h3>
-          <p>Verifikasi pengajuan peminjaman baru (stok otomatis berkurang) dan konfirmasi alat yang dikembalikan peminjam.</p>
-        </div>
-        <span class="hub-card-link">Lihat Daftar Peminjaman <i class="fas fa-arrow-right"></i></span>
-      </a>
-    </section>
+      <section class="ops-stack" aria-label="Menu Divisi Alat">
+        <a href="inventory_management.php" class="ops-tile">
+          <div class="ops-tile-left">
+            <div class="hub-card-icon"><i class="fas fa-boxes-stacked"></i></div>
+            <div>
+              <h3>Inventory</h3>
+              <p>Tambah, edit, dan atur stok alat.</p>
+            </div>
+          </div>
+          <span class="ops-tile-arrow"><i class="fas fa-arrow-right"></i></span>
+        </a>
 
-    <section aria-label="Alur Kerja Divisi Alat">
-      <h2 class="surface-card-title" style="margin-bottom: 14px;">
-        <i class="fas fa-route"></i> Alur Operasional Standar
-      </h2>
-      <div class="workflow-strip">
-        <div class="workflow-step">
-          <span class="workflow-step-num">01 / STOK</span>
-          <h4>Pastikan Katalog Akurat</h4>
-          <p>Perbarui stok dan kondisi alat di halaman Inventory sebelum periode peminjaman dimulai.</p>
-        </div>
-        <div class="workflow-step">
-          <span class="workflow-step-num">02 / KONFIRMASI</span>
-          <h4>Setujui Pengajuan Pending</h4>
-          <p>Konfirmasi pesanan baru agar peminjam dapat melanjutkan ke proses pembayaran ke Bendahara.</p>
-        </div>
-        <div class="workflow-step">
-          <span class="workflow-step-num">03 / PENGEMBALIAN</span>
-          <h4>Validasi Pengembalian</h4>
-          <p>Periksa kondisi fisik alat yang kembali lalu klik Konfirmasi Pengembalian untuk memulihkan stok.</p>
-        </div>
-      </div>
-    </section>
+        <a href="order-management.php" class="ops-tile">
+          <div class="ops-tile-left">
+            <div class="hub-card-icon"><i class="fas fa-clipboard-check"></i></div>
+            <div>
+              <h3>Peminjaman</h3>
+              <p>Konfirmasi pengajuan dan pengembalian.</p>
+            </div>
+          </div>
+          <span class="ops-tile-arrow"><i class="fas fa-arrow-right"></i></span>
+        </a>
+      </section>
+    </div>
   </main>
 
   <footer class="app-footer">
     <div class="app-footer-inner">
-      <p>&copy; 2024 D'Tools — Sistem Informasi Peminjaman Alat. All Rights Reserved.</p>
-      <p>Portal Divisi Alat</p>
+      <p>&copy; 2024 D'Tools — Sistem Informasi Peminjaman Alat.</p>
+      <p>Divisi Alat</p>
     </div>
   </footer>
 

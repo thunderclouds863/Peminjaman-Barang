@@ -121,40 +121,20 @@ function dt_history_status_class($status) {
 
     <main class="app-main">
         <div class="page-header">
-            <div>
-                <div class="page-eyebrow"><i class="fas fa-clock-rotate-left"></i> Arsip Transaksi</div>
-                <h1 class="page-title">Riwayat Peminjaman</h1>
-                <p class="page-subtitle">Lihat seluruh catatan pengajuan peminjaman alat, total biaya, dan status penyelesaian Anda.</p>
-            </div>
+            <h1 class="page-title">Riwayat Peminjaman</h1>
             <div class="page-actions">
                 <a href="peminjam_dashboard.php" class="btn-brand">
-                    <i class="fas fa-plus"></i> Pinjam Alat Baru
+                    <i class="fas fa-plus"></i> Pinjam Alat
                 </a>
             </div>
         </div>
 
-        <section class="stats-grid" aria-label="Statistik Riwayat">
-            <div class="stat-card">
-                <div>
-                    <div class="stat-label">Total Riwayat</div>
-                    <div class="stat-value"><?php echo count($orders); ?></div>
-                </div>
-                <div class="stat-icon crimson"><i class="fas fa-receipt"></i></div>
-            </div>
-            <div class="stat-card">
-                <div>
-                    <div class="stat-label">Transaksi Selesai</div>
-                    <div class="stat-value"><?php echo $completed_count; ?></div>
-                </div>
-                <div class="stat-icon emerald"><i class="fas fa-circle-check"></i></div>
-            </div>
-        </section>
+        <div class="metric-strip" aria-label="Statistik Riwayat">
+            <div class="metric-chip"><span class="dot crimson"></span><strong><?php echo count($orders); ?></strong> Total Riwayat</div>
+            <div class="metric-chip"><span class="dot emerald"></span><strong><?php echo $completed_count; ?></strong> Selesai</div>
+        </div>
 
         <section class="surface-card">
-            <div class="surface-card-header">
-                <h2 class="surface-card-title"><i class="fas fa-list"></i> Daftar Riwayat</h2>
-            </div>
-
             <div class="surface-card-body">
                 <?php if (count($orders) > 0): ?>
                     <div class="dt-table-wrap">
