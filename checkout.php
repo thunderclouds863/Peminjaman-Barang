@@ -143,14 +143,10 @@ if (!empty($cart_items)) {
 
     <main class="app-main">
         <div class="page-header">
-            <div>
-                <div class="page-eyebrow"><i class="fas fa-calendar-check"></i> Finalisasi Pengajuan</div>
-                <h1 class="page-title">Checkout Peminjaman</h1>
-                <p class="page-subtitle">Periksa kembali daftar alat dan tentukan tanggal pengembalian untuk menyelesaikan pengajuan.</p>
-            </div>
+            <h1 class="page-title">Checkout</h1>
             <div class="page-actions">
                 <a href="shopping-cart.php" class="btn-outline-subtle">
-                    <i class="fas fa-arrow-left"></i> Kembali ke Keranjang
+                    <i class="fas fa-arrow-left"></i> Keranjang
                 </a>
             </div>
         </div>
@@ -160,14 +156,11 @@ if (!empty($cart_items)) {
             <span class="step-sep"></span>
             <div class="checkout-step done"><span class="step-dot"><i class="fas fa-check"></i></span> Keranjang</div>
             <span class="step-sep"></span>
-            <div class="checkout-step active"><span class="step-dot">3</span> Tanggal Kembali & Checkout</div>
+            <div class="checkout-step active"><span class="step-dot">3</span> Checkout</div>
         </div>
 
         <div class="split-layout">
             <section class="surface-card">
-                <div class="surface-card-header">
-                    <h2 class="surface-card-title"><i class="fas fa-list-check"></i> Detail Alat Dipinjam</h2>
-                </div>
                 <?php if (!empty($checkout_rows)): ?>
                     <div class="cart-list">
                         <?php foreach ($checkout_rows as $item): ?>

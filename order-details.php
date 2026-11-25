@@ -115,14 +115,10 @@ $badgeClass = $status_map[$peminjaman['status']] ?? 'status-pending';
 
     <main class="app-main">
         <div class="page-header">
-            <div>
-                <div class="page-eyebrow"><i class="fas fa-file-invoice"></i> Rincian Transaksi</div>
-                <h1 class="page-title">Peminjaman #<?php echo (int)$peminjaman['id']; ?></h1>
-                <p class="page-subtitle">Ringkasan alat yang dipinjam, durasi sewa mingguan, dan total biaya peminjaman.</p>
-            </div>
+            <h1 class="page-title">Peminjaman #<?php echo (int)$peminjaman['id']; ?></h1>
             <div class="page-actions">
                 <a href="order-history.php" class="btn-outline-subtle">
-                    <i class="fas fa-arrow-left"></i> Kembali ke Riwayat
+                    <i class="fas fa-arrow-left"></i> Riwayat
                 </a>
                 <a href="home.php" class="btn-brand">
                     <i class="fas fa-house"></i> Dashboard

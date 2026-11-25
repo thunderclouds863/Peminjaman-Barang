@@ -125,14 +125,10 @@ foreach ($_SESSION['cart'] as $item_id => $item) {
 
     <main class="app-main">
         <div class="page-header">
-            <div>
-                <div class="page-eyebrow"><i class="fas fa-cart-shopping"></i> Pengajuan Baru</div>
-                <h1 class="page-title">Keranjang Peminjaman</h1>
-                <p class="page-subtitle">Atur jumlah unit setiap alat sebelum melanjutkan ke penentuan tanggal pengembalian.</p>
-            </div>
+            <h1 class="page-title">Keranjang Peminjaman</h1>
             <div class="page-actions">
                 <a href="peminjam_dashboard.php" class="btn-outline-subtle">
-                    <i class="fas fa-arrow-left"></i> Tambah Alat Lain
+                    <i class="fas fa-arrow-left"></i> Katalog Alat
                 </a>
             </div>
         </div>
@@ -142,15 +138,11 @@ foreach ($_SESSION['cart'] as $item_id => $item) {
             <span class="step-sep"></span>
             <div class="checkout-step active"><span class="step-dot">2</span> Keranjang</div>
             <span class="step-sep"></span>
-            <div class="checkout-step"><span class="step-dot">3</span> Tanggal Kembali & Checkout</div>
+            <div class="checkout-step"><span class="step-dot">3</span> Checkout</div>
         </div>
 
         <div class="split-layout">
             <section class="surface-card">
-                <div class="surface-card-header">
-                    <h2 class="surface-card-title"><i class="fas fa-box"></i> Daftar Alat Dipilih (<?php echo count($resolved_items); ?>)</h2>
-                </div>
-
                 <form method="POST">
                     <?php if (empty($resolved_items)): ?>
                         <div class="empty-state">

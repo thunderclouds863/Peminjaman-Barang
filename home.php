@@ -176,49 +176,26 @@ function dt_status_class($status) {
 
     <main class="app-main">
         <div class="page-header">
-            <div>
-                <div class="page-eyebrow"><i class="fas fa-clipboard-list"></i> Portal Peminjam</div>
-                <h1 class="page-title">Dashboard Peminjaman</h1>
-                <p class="page-subtitle">Pantau seluruh peminjaman aktif Anda, unggah bukti pembayaran, dan konfirmasi pengambilan atau pengembalian alat.</p>
-            </div>
+            <h1 class="page-title">Dashboard Peminjaman</h1>
             <div class="page-actions">
                 <a href="shopping-cart.php" class="btn-outline-subtle">
                     <i class="fas fa-cart-shopping"></i> Keranjang
                 </a>
                 <a href="peminjam_dashboard.php" class="btn-brand">
-                    <i class="fas fa-plus"></i> Pinjam Alat Baru
+                    <i class="fas fa-plus"></i> Pinjam Alat
                 </a>
             </div>
         </div>
 
-        <section class="stats-grid" aria-label="Ringkasan Peminjaman">
-            <div class="stat-card">
-                <div>
-                    <div class="stat-label">Peminjaman Aktif</div>
-                    <div class="stat-value"><?php echo count($active_rows); ?></div>
-                </div>
-                <div class="stat-icon crimson"><i class="fas fa-box-open"></i></div>
-            </div>
-            <div class="stat-card">
-                <div>
-                    <div class="stat-label">Perlu Tindakan Anda</div>
-                    <div class="stat-value"><?php echo $count_action_needed; ?></div>
-                </div>
-                <div class="stat-icon amber"><i class="fas fa-bell"></i></div>
-            </div>
-            <div class="stat-card">
-                <div>
-                    <div class="stat-label">Sedang Dipinjam</div>
-                    <div class="stat-value"><?php echo $count_borrowed; ?></div>
-                </div>
-                <div class="stat-icon blue"><i class="fas fa-microscope"></i></div>
-            </div>
-        </section>
+        <div class="metric-strip" aria-label="Ringkasan Peminjaman">
+            <div class="metric-chip"><span class="dot crimson"></span><strong><?php echo count($active_rows); ?></strong> Aktif</div>
+            <div class="metric-chip"><span class="dot amber"></span><strong><?php echo $count_action_needed; ?></strong> Perlu Tindakan</div>
+            <div class="metric-chip"><span class="dot blue"></span><strong><?php echo $count_borrowed; ?></strong> Sedang Dipinjam</div>
+        </div>
 
         <section class="surface-card">
             <div class="surface-card-header">
-                <h2 class="surface-card-title"><i class="fas fa-table-list"></i> Daftar Peminjaman Aktif</h2>
-                <div class="search-field">
+                <div class="search-field" style="max-width: 380px;">
                     <i class="fas fa-magnifying-glass"></i>
                     <input type="text" id="searchInput" placeholder="Cari nama alat atau status...">
                 </div>

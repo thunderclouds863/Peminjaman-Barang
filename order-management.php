@@ -148,47 +148,21 @@ function dt_order_status_class($status) {
 
     <main class="app-main">
         <div class="page-header">
-            <div>
-                <div class="page-eyebrow"><i class="fas fa-clipboard-check"></i> Persetujuan & Sirkulasi</div>
-                <h1 class="page-title">Daftar Peminjaman Alat</h1>
-                <p class="page-subtitle">Konfirmasi pengajuan peminjaman baru dan validasi pengembalian alat untuk memperbarui stok secara otomatis.</p>
-            </div>
+            <h1 class="page-title">Daftar Peminjaman</h1>
             <div class="page-actions">
                 <a href="inventory_management.php" class="btn-outline-subtle">
-                    <i class="fas fa-boxes-stacked"></i> Cek Stok Inventaris
+                    <i class="fas fa-boxes-stacked"></i> Inventory
                 </a>
             </div>
         </div>
 
-        <section class="stats-grid" aria-label="Ringkasan Peminjaman">
-            <div class="stat-card">
-                <div>
-                    <div class="stat-label">Total Transaksi</div>
-                    <div class="stat-value"><?php echo count($orders); ?></div>
-                </div>
-                <div class="stat-icon crimson"><i class="fas fa-list-check"></i></div>
-            </div>
-            <div class="stat-card">
-                <div>
-                    <div class="stat-label">Menunggu Persetujuan</div>
-                    <div class="stat-value"><?php echo $pending_count; ?></div>
-                </div>
-                <div class="stat-icon amber"><i class="fas fa-clock"></i></div>
-            </div>
-            <div class="stat-card">
-                <div>
-                    <div class="stat-label">Konfirmasi Pengembalian</div>
-                    <div class="stat-value"><?php echo $return_wait_count; ?></div>
-                </div>
-                <div class="stat-icon blue"><i class="fas fa-rotate-left"></i></div>
-            </div>
-        </section>
+        <div class="metric-strip" aria-label="Ringkasan Peminjaman">
+            <div class="metric-chip"><span class="dot crimson"></span><strong><?php echo count($orders); ?></strong> Total</div>
+            <div class="metric-chip"><span class="dot amber"></span><strong><?php echo $pending_count; ?></strong> Pending</div>
+            <div class="metric-chip"><span class="dot blue"></span><strong><?php echo $return_wait_count; ?></strong> Pengembalian</div>
+        </div>
 
         <section class="surface-card">
-            <div class="surface-card-header">
-                <h2 class="surface-card-title"><i class="fas fa-table-list"></i> Peminjaman List</h2>
-            </div>
-
             <div class="surface-card-body">
                 <div class="dt-table-wrap">
                     <table id="orderTable" class="dt-table">

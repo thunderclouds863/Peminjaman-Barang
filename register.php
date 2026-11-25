@@ -5,21 +5,17 @@ $username = "root";
 $password = "";
 $dbname = "peminjaman_alat";
 
-// Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
 if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle form submission for registration
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
     $role = $_POST['role'];
 
-    // Check if username already exists
     $sql_check = "SELECT * FROM users WHERE username = '$username'";
     $result_check = $conn->query($sql_check);
     if ($result_check->num_rows > 0) {
@@ -27,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
         exit();
     }
 
-    // Insert the new user into the database
     $sql = "INSERT INTO users (username, password, role) VALUES ('$username', '$password', '$role')";
     if ($conn->query($sql) === TRUE) {
         header("Location: index.php?message=Registration successful!");
@@ -53,37 +48,57 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
 
 <body class="auth-body">
   <main class="auth-shell">
-    <section class="auth-brand-panel" aria-label="Pendaftaran D'Tools">
+    <section class="auth-brand-panel" aria-label="D'Tools">
       <div class="auth-brand-content">
         <div class="auth-logo-badge">
           <img src="logo.png" alt="Logo D'Tools">
-          <span>D'Tools Inventory</span>
+          <span>D'Tools</span>
         </div>
 
-        <h1>Buat Akun Peminjam Alat</h1>
-        <p class="auth-lead">
-          Daftarkan akun Anda untuk mulai mengajukan peminjaman peralatan laboratorium, melihat riwayat transaksi, dan memantau status pengembalian.
-        </p>
+        <h1>Pendaftaran Peminjam Alat</h1>
 
-        <ul class="auth-steps">
-          <li>
-            <span class="auth-step-icon"><i class="fas fa-user-plus"></i></span>
-            <span><strong>Registrasi Instan</strong> — Buat akun Peminjam Alat dalam beberapa detik.</span>
-          </li>
-          <li>
-            <span class="auth-step-icon"><i class="fas fa-cart-shopping"></i></span>
-            <span><strong>Keranjang Peminjaman</strong> — Pilih beberapa alat sekaligus dan tentukan tanggal pengembalian.</span>
-          </li>
-          <li>
-            <span class="auth-step-icon"><i class="fas fa-receipt"></i></span>
-            <span><strong>Riwayat Transparan</strong> — Semua detail biaya dan status tercatat rapi di akun Anda.</span>
-          </li>
-        </ul>
+        <div class="auth-visual-flow" aria-hidden="true">
+          <div class="flow-track">
+            <div class="flow-node">
+              <i class="fas fa-user-plus"></i>
+              <span>Daftar</span>
+            </div>
+            <div class="flow-node">
+              <i class="fas fa-boxes-stacked"></i>
+              <span>Pilih Alat</span>
+            </div>
+            <div class="flow-node">
+              <i class="fas fa-calendar-check"></i>
+              <span>Checkout</span>
+            </div>
+            <div class="flow-node">
+              <i class="fas fa-hand-holding-box"></i>
+              <span>Ambil</span>
+            </div>
+          </div>
+
+          <div class="auth-preview-card">
+            <div class="auth-preview-row">
+              <div>
+                <strong>Blood Pressure Monitor</strong>
+                <div class="auth-preview-meta">Alat Fisiologi &middot; Rp 10.000/mgg</div>
+              </div>
+              <span class="auth-preview-pill active">5 unit</span>
+            </div>
+            <div class="auth-preview-row">
+              <div>
+                <strong>Heart Rate Monitor</strong>
+                <div class="auth-preview-meta">Polar Vantage V2 &middot; Rp 10.000/mgg</div>
+              </div>
+              <span class="auth-preview-pill ready">4 unit</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="auth-brand-footer">
-        <span>D'Tools Lab Management</span>
-        <span>Peminjam Portal</span>
+        <span>Portal Peminjam</span>
+        <span>D'Tools</span>
       </div>
     </section>
 
@@ -97,8 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
       </div>
 
       <div class="auth-form-header">
-        <h2>Registrasi Akun</h2>
-        <p>Lengkapi data di bawah ini untuk mendaftar sebagai Peminjam Alat.</p>
+        <h2>Registrasi</h2>
       </div>
 
       <?php if (!empty($_GET['message'])): ?>
@@ -111,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
 
       <form method="POST" action="">
         <div class="form-group">
-          <label class="form-label-dt" for="role">Peran Pengguna</label>
+          <label class="form-label-dt" for="role">Role</label>
           <div class="input-icon-wrap">
             <i class="fas fa-user-tag"></i>
             <select name="role" id="role" class="form-control-dt" required>
@@ -125,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
           <label class="form-label-dt" for="username">Username</label>
           <div class="input-icon-wrap">
             <i class="fas fa-user"></i>
-            <input type="text" id="username" name="username" class="form-control-dt" placeholder="Buat username unik" autocomplete="username" required>
+            <input type="text" id="username" name="username" class="form-control-dt" placeholder="Username" autocomplete="username" required>
           </div>
         </div>
 
@@ -133,12 +147,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
           <label class="form-label-dt" for="password">Password</label>
           <div class="input-icon-wrap">
             <i class="fas fa-lock"></i>
-            <input type="password" id="password" name="password" class="form-control-dt" placeholder="Buat password" autocomplete="new-password" required>
+            <input type="password" id="password" name="password" class="form-control-dt" placeholder="Password" autocomplete="new-password" required>
           </div>
         </div>
 
         <button type="submit" name="register" value="register" class="btn-brand auth-submit-btn">
-          <span>Daftar Sekarang</span>
+          <span>Daftar</span>
           <i class="fas fa-user-check"></i>
         </button>
       </form>
