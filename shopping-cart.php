@@ -1,5 +1,5 @@
 <?php
-include('styles.php');
+session_start();
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] != 'Peminjam Alat') {
     header("Location: index.php");
@@ -9,22 +9,20 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'Peminjam Alat') {
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "peminjaman_alat";  // Updated database name
+$dbname = "peminjaman_alat";
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check if the connection is successful
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Initialize the cart if not already set
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
 
 // Handle add to cart
 if (isset($_GET['add_to_cart'])) {
-    $item_id = $_GET['add_to_cart'];
+    $item_id = intval($_GET['add_to_cart']);
     if ($item_id > 0) {
         if (!isset($_SESSION['cart'][$item_id])) {
             $_SESSION['cart'][$item_id] = ['quantity' => 0];
@@ -35,7 +33,7 @@ if (isset($_GET['add_to_cart'])) {
 
 // Handle remove from cart
 if (isset($_GET['remove_from_cart'])) {
-    $item_id = $_GET['remove_from_cart'];
+    $item_id = intval($_GET['remove_from_cart']);
     if (isset($_SESSION['cart'][$item_id])) {
         unset($_SESSION['cart'][$item_id]);
     }
@@ -46,279 +44,254 @@ if (isset($_POST['update_quantity'])) {
     if (isset($_POST['quantity']) && is_array($_POST['quantity'])) {
         foreach ($_POST['quantity'] as $item_id => $quantity) {
             if (isset($_SESSION['cart'][$item_id])) {
-                $quantity = max(1, min(10, intval($quantity))); // Ensure quantity is between 1 and 10
+                $quantity = max(1, min(10, intval($quantity)));
                 $_SESSION['cart'][$item_id]['quantity'] = $quantity;
             }
         }
     }
 }
+
+// Resolve cart items for display & summary
+$resolved_items = [];
+$subtotal_weekly = 0;
+$total_units = 0;
+
+foreach ($_SESSION['cart'] as $item_id => $item) {
+    if ($item_id <= 0) {
+        unset($_SESSION['cart'][$item_id]);
+        continue;
+    }
+    if (is_array($item) && isset($item['quantity'])) {
+        $sql = "SELECT * FROM item WHERE id = " . intval($item_id);
+        $result = $conn->query($sql);
+        if ($result && $result->num_rows > 0) {
+            $product = $result->fetch_assoc();
+            $line_total = $product['price'] * $item['quantity'];
+            $subtotal_weekly += $line_total;
+            $total_units += (int)$item['quantity'];
+            $resolved_items[] = [
+                'id' => $item_id,
+                'name' => $product['name'],
+                'description' => $product['description'] ?? '',
+                'price' => $product['price'],
+                'quantity' => $item['quantity'],
+                'line_total' => $line_total,
+            ];
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>/* General Styles */
-html {
-    height: 100%;
-    margin-bottom: 90px;
-    padding: 0;
-    overflow-y: auto;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(45deg, #a0d9d2, #72c3b1, #63a6b1, #e1e8ee);
-    background-size: 400% 400%;
-    animation: gradientBG 10s ease infinite;
-    padding: 0;
-    align-items: center;
-    margin-bottom: 80px;
-    margin-top:80px;
-}
-
-.content {
-    flex-grow: 1;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
-    width: 90%;
-}
-
-h2 {
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.cart-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 2px solid #e0e0e0;
-    transition: background-color 0.3s;
-    position: relative;
-}
-
-.cart-item:hover {
-    background-color: #f9f9f9;
-}
-
-.cart-item-info {
-    flex: 1;
-}
-
-.cart-item-actions {
-    display: flex;
-    align-items: center;
-}
-
-.cart-item-actions input {
-    width: 50px;
-    text-align: center;
-    padding: 8px;
-    font-size: 16px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin: 0 10px;
-    transition: all 0.3s ease;
-}
-
-.cart-item-actions input:focus {
-    border-color: #ff7043;
-    outline: none;
-}
-
-.cart-item-actions button {
-    background-color: #72c3b1;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    margin: 0 5px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: background-color 0.3s ease;y
-}
-
-.cart-item-actions button:hover {
-    background-color:  #e1e8ee;
-}
-
-.remove-button {
-    background-color: #72c3b1;
-    padding:8px;
-    color: white;
-    text-decoration: none;
-    font-size: 14px;
-    margin-left: 10px;
-    transition: color 0.3s ease;
-}
-
-.remove-button:hover {
-    background-color:  #8fd9a8;
-    color: white;
-    text-decoration: underline;
-}
-
-.checkout-button {
-    display: block;
-    width: 100%;
-    background: linear-gradient(135deg, #8fd9a8, #70c5b0);
-    color: white;
-    padding: 15px;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 18px;
-    text-decoration: none;
-    margin-top: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: background 0.3s ease;
-}
-
-.checkout-button:hover {
-    background: linear-gradient(45deg, #a0d9d2, #72c3b1, #63a6b1, #e1e8ee);
-}
-
-footer {
-    background-color: #5a9e97; /* Updated to match the header color scheme */
-    color: white;
-    text-align: center;
-    padding: 15px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    font-size: 14px;
-}
-</style>
+    <title>Keranjang Peminjaman — D'Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body>
+<body class="app-body">
+    <header class="app-header">
+        <div class="app-header-inner">
+            <a href="home.php" class="brand-lockup">
+                <span class="brand-logo-wrap">
+                    <img src="logo.png" alt="Logo D'Tools">
+                </span>
+                <span class="brand-text">
+                    <span class="brand-title">D'Tools</span>
+                    <span class="brand-subtitle">Sistem Informasi Peminjaman Alat</span>
+                </span>
+            </a>
 
-    <div class="content">
-        <h2>Cart Peminjaman</h2>
+            <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
 
-        <form method="POST">
-            <?php
-            if (empty($_SESSION['cart'])) {
-                echo "<p>Your cart is empty.</p>";
-            } else {
-                foreach ($_SESSION['cart'] as $item_id => $item) {
-                    if ($item_id <= 0) {
-                        unset($_SESSION['cart'][$item_id]);
-                        continue;
-                    }
+            <nav class="app-nav" id="navbar" aria-label="Navigasi Peminjam">
+                <span class="role-pill">Peminjam Alat</span>
+                <a href="home.php"><i class="fas fa-house"></i> Home</a>
+                <a href="peminjam_dashboard.php"><i class="fas fa-boxes-stacked"></i> Katalog Alat</a>
+                <a href="shopping-cart.php" class="active"><i class="fas fa-cart-shopping"></i> Keranjang</a>
+                <a href="order-history.php"><i class="fas fa-clock-rotate-left"></i> Riwayat</a>
+                <a href="logout.php" class="nav-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
+            </nav>
+        </div>
+    </header>
 
-                    if (is_array($item) && isset($item['quantity'])) {
-                        $sql = "SELECT * FROM item WHERE id = $item_id";
-                        $result = $conn->query($sql);
+    <main class="app-main">
+        <div class="page-header">
+            <div>
+                <div class="page-eyebrow"><i class="fas fa-cart-shopping"></i> Pengajuan Baru</div>
+                <h1 class="page-title">Keranjang Peminjaman</h1>
+                <p class="page-subtitle">Atur jumlah unit setiap alat sebelum melanjutkan ke penentuan tanggal pengembalian.</p>
+            </div>
+            <div class="page-actions">
+                <a href="peminjam_dashboard.php" class="btn-outline-subtle">
+                    <i class="fas fa-arrow-left"></i> Tambah Alat Lain
+                </a>
+            </div>
+        </div>
 
-                        if ($result && $result->num_rows > 0) {
-                            $product = $result->fetch_assoc();
-                            $total_price = $product['price'] * $item['quantity'];
-                            ?>
+        <div class="checkout-steps" aria-label="Tahapan Peminjaman">
+            <div class="checkout-step done"><span class="step-dot"><i class="fas fa-check"></i></span> Pilih Alat</div>
+            <span class="step-sep"></span>
+            <div class="checkout-step active"><span class="step-dot">2</span> Keranjang</div>
+            <span class="step-sep"></span>
+            <div class="checkout-step"><span class="step-dot">3</span> Tanggal Kembali & Checkout</div>
+        </div>
 
-                            <div class="cart-item" id="cart-item-<?php echo $item_id; ?>">
-                                <div class="cart-item-info">
-                                    <h3><?php echo $product['name']; ?></h3>
-                                    <p class="price">Rp <?php echo number_format($product['price'], 0, ',', '.'); ?> x
-                                        <?php echo $item['quantity']; ?>
-                                    </p>
+        <div class="split-layout">
+            <section class="surface-card">
+                <div class="surface-card-header">
+                    <h2 class="surface-card-title"><i class="fas fa-box"></i> Daftar Alat Dipilih (<?php echo count($resolved_items); ?>)</h2>
+                </div>
+
+                <form method="POST">
+                    <?php if (empty($resolved_items)): ?>
+                        <div class="empty-state">
+                            <div class="empty-state-icon"><i class="fas fa-cart-arrow-down"></i></div>
+                            <h3>Keranjang Peminjaman Kosong</h3>
+                            <p>Anda belum memilih alat laboratorium untuk dipinjam.</p>
+                            <a href="peminjam_dashboard.php" class="btn-brand">
+                                <i class="fas fa-boxes-stacked"></i> Jelajahi Katalog Alat
+                            </a>
+                        </div>
+                    <?php else: ?>
+                        <div class="cart-list">
+                            <?php foreach ($resolved_items as $entry): ?>
+                                <div class="cart-row" id="cart-item-<?php echo $entry['id']; ?>">
+                                    <div class="cart-row-info">
+                                        <h3><?php echo htmlspecialchars($entry['name']); ?></h3>
+                                        <p class="cart-row-price">
+                                            Rp <?php echo number_format($entry['price'], 0, ',', '.'); ?> / minggu &times; <?php echo (int)$entry['quantity']; ?>
+                                            &nbsp;&bull;&nbsp;
+                                            <strong style="color: var(--ink-950);">Rp <?php echo number_format($entry['line_total'], 0, ',', '.'); ?></strong>
+                                        </p>
+                                    </div>
+
+                                    <div class="cart-row-controls">
+                                        <div class="qty-stepper">
+                                            <button type="button" class="quantity-button decrease" data-item-id="<?php echo $entry['id']; ?>" aria-label="Kurangi jumlah">&minus;</button>
+                                            <input type="number" name="quantity[<?php echo $entry['id']; ?>]" value="<?php echo (int)$entry['quantity']; ?>" min="1" max="10" class="quantity-input" aria-label="Jumlah">
+                                            <button type="button" class="quantity-button increase" data-item-id="<?php echo $entry['id']; ?>" aria-label="Tambah jumlah">+</button>
+                                        </div>
+
+                                        <a href="shopping-cart.php?remove_from_cart=<?php echo $entry['id']; ?>"
+                                           class="btn-soft-danger btn-sm-action"
+                                           onclick="return confirm('Hapus alat ini dari keranjang?');">
+                                            <i class="fas fa-trash-can"></i> Hapus
+                                        </a>
+                                    </div>
                                 </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </form>
+            </section>
 
-                                <div class="cart-item-actions">
-                                    <!-- Decrease button -->
-                                    <button type="button" class="quantity-button decrease" data-item-id="<?php echo $item_id; ?>">-</button>
-                                    <input type="number" name="quantity[<?php echo $item_id; ?>]"
-                                           value="<?php echo $item['quantity']; ?>" min="1" max="10" class="quantity-input">
-                                    <!-- Increase button -->
-                                    <button type="button" class="quantity-button increase" data-item-id="<?php echo $item_id; ?>">+</button>
+            <aside class="surface-card">
+                <div class="surface-card-header">
+                    <h2 class="surface-card-title"><i class="fas fa-receipt"></i> Ringkasan Estimasi</h2>
+                </div>
+                <div class="surface-card-body">
+                    <div class="summary-line">
+                        <span>Jenis Alat</span>
+                        <span class="cell-mono"><?php echo count($resolved_items); ?> item</span>
+                    </div>
+                    <div class="summary-line">
+                        <span>Total Unit</span>
+                        <span class="cell-mono"><?php echo $total_units; ?> unit</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Estimasi / Minggu</span>
+                        <span class="mono-amount">Rp <?php echo number_format($subtotal_weekly, 0, ',', '.'); ?></span>
+                    </div>
+                    <p style="font-size: 12.5px; color: var(--ink-500); margin: 12px 0 18px;">
+                        Total biaya akhir dihitung otomatis berdasarkan jumlah minggu pada halaman checkout.
+                    </p>
+                    <?php if (!empty($resolved_items)): ?>
+                        <a href="checkout.php" class="btn-brand" style="width: 100%; padding: 12px 16px;">
+                            <span>Pinjam Sekarang</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    <?php else: ?>
+                        <a href="peminjam_dashboard.php" class="btn-outline-subtle" style="width: 100%; padding: 12px 16px;">
+                            <i class="fas fa-boxes-stacked"></i> Pilih Alat Dulu
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </aside>
+        </div>
+    </main>
 
-                                    <!-- Remove button -->
-                                    <a href="shopping-cart.php?remove_from_cart=<?php echo $item_id; ?>"
-                                       class="remove-button"
-                                       onclick="return confirm('Are you sure you want to remove this item?');">
-                                       Remove
-                                    </a>
-                                </div>
-                            </div>
+    <footer class="app-footer">
+        <div class="app-footer-inner">
+            <p>&copy; 2024 D'Tools — Sistem Informasi Peminjaman Alat.</p>
+            <p>Portal Peminjam</p>
+        </div>
+    </footer>
 
-                            <?php
-                        } else {
-                            echo "<p>Item not found for ID: $item_id</p>";
-                        }
-                    } else {
-                        echo "<p>Error: Cart item is not structured properly for item ID: $item_id</p>";
-                    }
+    <script>
+        const decreaseButtons = document.querySelectorAll('.decrease');
+        const increaseButtons = document.querySelectorAll('.increase');
+
+        decreaseButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                const itemId = this.getAttribute('data-item-id');
+                const input = document.querySelector(`input[name="quantity[${itemId}]"]`);
+                const currentValue = parseInt(input.value, 10);
+                if (currentValue > 1) {
+                    const nextVal = currentValue - 1;
+                    input.value = nextVal;
+                    updateCart(itemId, nextVal);
                 }
-            }
-            ?>
-            <a href="checkout.php" class="checkout-button">Pinjam Sekarang</a>
-        </form>
-    </div>
+            });
+        });
 
+        increaseButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                const itemId = this.getAttribute('data-item-id');
+                const input = document.querySelector(`input[name="quantity[${itemId}]"]`);
+                const currentValue = parseInt(input.value, 10);
+                if (currentValue < 10) {
+                    const nextVal = currentValue + 1;
+                    input.value = nextVal;
+                    updateCart(itemId, nextVal);
+                }
+            });
+        });
 
-    <script>// Update quantity dynamically using JavaScript
-const decreaseButtons = document.querySelectorAll('.decrease');
-const increaseButtons = document.querySelectorAll('.increase');
+        function updateCart(itemId, newQuantity) {
+            const formData = new FormData();
+            formData.append('update_quantity', true);
+            formData.append(`quantity[${itemId}]`, newQuantity);
 
-decreaseButtons.forEach(button => {
-    button.addEventListener('click', function(e) {
-        e.preventDefault(); // Prevent any default behavior
-        const itemId = this.getAttribute('data-item-id');
-        let input = document.querySelector(`input[name="quantity[${itemId}]"]`);
-        let currentValue = parseInt(input.value);
-        if (currentValue > 1) {
-            input.value = currentValue - 2;
-            updateCart(itemId, currentValue - 2);
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData
+            })
+            .then(() => {
+                window.location.reload();
+            })
+            .catch(error => console.error('Error:', error));
         }
-    });
-});
 
-increaseButtons.forEach(button => {
-    button.addEventListener('click', function(e) {
-        e.preventDefault(); // Prevent any default behavior
-        const itemId = this.getAttribute('data-item-id');
-        let input = document.querySelector(`input[name="quantity[${itemId}]"]`);
-        let currentValue = parseInt(input.value);
-        if (currentValue < 10) {
-            input.value = currentValue;
-            updateCart(itemId, currentValue);
-        }
-    });
-});
-
-// Function to update the cart
-function updateCart(itemId, newQuantity) {
-    // Create form data
-    const formData = new FormData();
-    formData.append('update_quantity', true);
-    formData.append(`quantity[${itemId}]`, newQuantity);
-
-    // Send AJAX request
-    fetch(window.location.href, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(() => {
-        // Optionally refresh the page or update the UI
-        window.location.reload();
-    })
-    .catch(error => console.error('Error:', error));
-}</script>
-
+        const hamburger = document.getElementById('hamburger');
+        const navbar = document.getElementById('navbar');
+        hamburger.addEventListener('click', () => {
+            const isOpen = navbar.classList.toggle('active');
+            hamburger.setAttribute('aria-expanded', isOpen);
+        });
+    </script>
 </body>
 
 </html>
 
-<?php
-$conn->close();
-?>
+<?php $conn->close(); ?>
