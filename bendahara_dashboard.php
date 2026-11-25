@@ -121,35 +121,14 @@ if ($result) {
 
     <main class="app-main">
         <div class="page-header">
-            <div>
-                <div class="page-eyebrow"><i class="fas fa-wallet"></i> Keuangan & Verifikasi</div>
-                <h1 class="page-title">Dashboard Bendahara</h1>
-                <p class="page-subtitle">Periksa bukti transfer peminjaman alat dan konfirmasi pembayaran agar peralatan dapat segera diambil peminjam.</p>
+            <h1 class="page-title">Verifikasi Pembayaran</h1>
+            <div class="metric-chips" aria-label="Ringkasan Pembayaran">
+                <div class="metric-chip"><span class="dot amber"></span><strong><?php echo count($pending_payments); ?></strong> Antrean</div>
+                <div class="metric-chip accent"><strong>Rp <?php echo number_format($total_pending_amount, 0, ',', '.'); ?></strong></div>
             </div>
         </div>
 
-        <section class="stats-grid" aria-label="Ringkasan Pembayaran">
-            <div class="stat-card">
-                <div>
-                    <div class="stat-label">Menunggu Konfirmasi</div>
-                    <div class="stat-value"><?php echo count($pending_payments); ?></div>
-                </div>
-                <div class="stat-icon amber"><i class="fas fa-hourglass-half"></i></div>
-            </div>
-            <div class="stat-card">
-                <div>
-                    <div class="stat-label">Total Nominal Antrean</div>
-                    <div class="stat-value" style="font-size: 20px;">Rp <?php echo number_format($total_pending_amount, 0, ',', '.'); ?></div>
-                </div>
-                <div class="stat-icon crimson"><i class="fas fa-rupiah-sign"></i></div>
-            </div>
-        </section>
-
         <section class="surface-card">
-            <div class="surface-card-header">
-                <h2 class="surface-card-title"><i class="fas fa-money-check-dollar"></i> Peminjaman untuk Diproses</h2>
-            </div>
-
             <div class="surface-card-body">
                 <div class="dt-table-wrap">
                     <table id="orderTable" class="dt-table">
