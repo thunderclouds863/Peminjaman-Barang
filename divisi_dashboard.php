@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body class="app-body">
+<body class="app-body has-bottom-nav">
   <header class="app-header">
     <div class="app-header-inner">
       <a href="divisi_dashboard.php" class="brand-lockup">
@@ -25,6 +25,7 @@
         </span>
       </a>
 
+      <a href="logout.php" class="header-mobile-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
       <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
         <i class="fas fa-bars"></i>
       </button>
@@ -103,6 +104,12 @@
       <p>Divisi Alat</p>
     </div>
   </footer>
+
+  <nav class="mobile-bottom-nav" aria-label="Navigasi Cepat Divisi Alat">
+    <a href="divisi_dashboard.php" class="active"><i class="fas fa-house"></i><span>Home</span></a>
+    <a href="inventory_management.php"><i class="fas fa-boxes-stacked"></i><span>Inventory</span></a>
+    <a href="order-management.php"><i class="fas fa-clipboard-check"></i><span>Peminjaman</span></a>
+  </nav>
 
   <script>
     const hamburger = document.getElementById('hamburger');

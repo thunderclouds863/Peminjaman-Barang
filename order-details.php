@@ -85,7 +85,7 @@ $badgeClass = $status_map[$peminjaman['status']] ?? 'status-pending';
     <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body class="app-body">
+<body class="app-body has-bottom-nav">
     <header class="app-header">
         <div class="app-header-inner">
             <a href="home.php" class="brand-lockup">
@@ -98,6 +98,7 @@ $badgeClass = $status_map[$peminjaman['status']] ?? 'status-pending';
                 </span>
             </a>
 
+            <a href="logout.php" class="header-mobile-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
             <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
@@ -156,7 +157,7 @@ $badgeClass = $status_map[$peminjaman['status']] ?? 'status-pending';
                 </h2>
 
                 <div class="dt-table-wrap">
-                    <table class="dt-table">
+                    <table class="dt-table dt-mobile-list">
                         <thead>
                             <tr>
                                 <th>Item ID</th>
@@ -177,12 +178,12 @@ $badgeClass = $status_map[$peminjaman['status']] ?? 'status-pending';
                                 $total_peminjaman_amount += $total_item_price;
 
                                 echo "<tr>
-                                        <td class='cell-mono'>#{$item['item_id']}</td>
-                                        <td class='cell-strong'>" . htmlspecialchars($item['item_name']) . "</td>
-                                        <td class='cell-mono'>{$item['quantity']}</td>
-                                        <td class='cell-mono'>Rp " . number_format($item['item_price'], 0, ',', '.') . "</td>
-                                        <td class='cell-mono'>Rp " . number_format($weekly_price, 0, ',', '.') . "</td>
-                                        <td class='cell-mono' style='font-weight:700;'>Rp " . number_format($total_item_price, 0, ',', '.') . "</td>
+                                        <td class='cell-mono col-index' data-label='Item ID'>#{$item['item_id']}</td>
+                                        <td class='cell-strong col-primary' data-label='Nama Alat'>" . htmlspecialchars($item['item_name']) . "</td>
+                                        <td class='cell-mono' data-label='Jumlah'>{$item['quantity']} unit</td>
+                                        <td class='cell-mono' data-label='Harga / Minggu'>Rp " . number_format($item['item_price'], 0, ',', '.') . "</td>
+                                        <td class='cell-mono' data-label='Subtotal / Minggu'>Rp " . number_format($weekly_price, 0, ',', '.') . "</td>
+                                        <td class='cell-mono' data-label='Total Biaya' style='font-weight:700;'>Rp " . number_format($total_item_price, 0, ',', '.') . "</td>
                                       </tr>";
                             }
                             ?>
@@ -204,6 +205,13 @@ $badgeClass = $status_map[$peminjaman['status']] ?? 'status-pending';
             <p>Portal Peminjam</p>
         </div>
     </footer>
+
+    <nav class="mobile-bottom-nav" aria-label="Navigasi Cepat Peminjam">
+        <a href="home.php"><i class="fas fa-house"></i><span>Home</span></a>
+        <a href="peminjam_dashboard.php"><i class="fas fa-boxes-stacked"></i><span>Katalog</span></a>
+        <a href="shopping-cart.php"><i class="fas fa-cart-shopping"></i><span>Keranjang</span></a>
+        <a href="order-history.php" class="active"><i class="fas fa-clock-rotate-left"></i><span>Riwayat</span></a>
+    </nav>
 
     <script>
         const hamburger = document.getElementById('hamburger');
