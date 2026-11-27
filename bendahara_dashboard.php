@@ -91,7 +91,7 @@ if ($result) {
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="assets/css/theme.css">
+    <link rel="stylesheet" href="assets/css/theme.css?v=<?php echo filemtime('assets/css/theme.css'); ?>">
 </head>
 
 <body class="app-body has-bottom-nav">
@@ -131,6 +131,13 @@ if ($result) {
 
         <section class="surface-card">
             <div class="surface-card-body">
+                <?php if (empty($pending_payments)): ?>
+                    <div class="empty-state">
+                        <img src="assets/svg/empty-history.svg" alt="" class="empty-state-svg" aria-hidden="true">
+                        <h3>Semua Pembayaran Terverifikasi</h3>
+                        <p>Belum ada antrean bukti pembayaran yang menunggu konfirmasi saat ini.</p>
+                    </div>
+                <?php else: ?>
                 <div class="dt-table-wrap">
                     <table id="orderTable" class="dt-table dt-mobile-list">
                         <thead>
@@ -196,6 +203,7 @@ if ($result) {
                         </tbody>
                     </table>
                 </div>
+                <?php endif; ?>
             </div>
         </section>
     </main>
@@ -210,25 +218,27 @@ if ($result) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $('#orderTable').DataTable({
-                searching: true,
-                paging: true,
-                ordering: true,
-                info: true,
-                language: {
-                    search: "Cari:",
-                    lengthMenu: "Tampilkan _MENU_ entri",
-                    info: "Menampilkan _START_–_END_ dari _TOTAL_ antrean",
-                    infoEmpty: "Tidak ada pembayaran menunggu konfirmasi",
-                    emptyTable: "Semua pembayaran telah terverifikasi.",
-                    paginate: {
-                        next: "Berikutnya",
-                        previous: "Sebelumnya"
+        if (window.jQuery && $.fn.DataTable && $('#orderTable').length) {
+            $(document).ready(function () {
+                $('#orderTable').DataTable({
+                    searching: true,
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    language: {
+                        search: "Cari:",
+                        lengthMenu: "Tampilkan _MENU_ entri",
+                        info: "Menampilkan _START_–_END_ dari _TOTAL_ antrean",
+                        infoEmpty: "Tidak ada pembayaran menunggu konfirmasi",
+                        emptyTable: "Semua pembayaran telah terverifikasi.",
+                        paginate: {
+                            next: "Berikutnya",
+                            previous: "Sebelumnya"
+                        }
                     }
-                }
+                });
             });
-        });
+        }
 
         const hamburger = document.getElementById('hamburger');
         const navbar = document.getElementById('navbar');

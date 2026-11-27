@@ -141,9 +141,8 @@ function dt_status_class($status) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="assets/css/theme.css">
+    <link rel="stylesheet" href="assets/css/theme.css?v=<?php echo filemtime('assets/css/theme.css'); ?>">
 </head>
 
 <body class="app-body has-bottom-nav">
@@ -246,9 +245,7 @@ function dt_status_class($status) {
                                                 <button type="button"
                                                     class="btn-brand btn-sm-action bayarBtn"
                                                     data-peminjaman-id="<?php echo $row['peminjaman_id']; ?>"
-                                                    data-total-amount="<?php echo number_format($row['total_pembayaran'], 0, ',', '.'); ?>"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#paymentModal">
+                                                    data-total-amount="<?php echo number_format($row['total_pembayaran'], 0, ',', '.'); ?>">
                                                     <i class="fas fa-credit-card"></i> Bayar
                                                 </button>
                                             <?php } elseif ($row['loan_status'] == 'Siap Diambil') { ?>
@@ -277,44 +274,42 @@ function dt_status_class($status) {
         </section>
     </main>
 
-    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="paymentModalLabel">
-                        <i class="fas fa-file-invoice-dollar" style="color: var(--brand-crimson); margin-right: 8px;"></i>
-                        Konfirmasi Pembayaran
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="dt-modal-backdrop" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentModalLabel">
+        <div class="dt-modal">
+            <div class="dt-modal-header">
+                <h3 id="paymentModalLabel">
+                    <i class="fas fa-file-invoice-dollar" style="color: var(--brand-crimson); margin-right: 8px;"></i>
+                    Konfirmasi Pembayaran
+                </h3>
+                <button type="button" class="dt-modal-close" id="closePaymentModal" aria-label="Tutup">&times;</button>
+            </div>
+            <div class="dt-modal-body">
+                <div class="payment-total-box">
+                    <span>Total Biaya Peminjaman</span>
+                    <strong id="modalTotalAmount">Rp <?php echo number_format($first_total_pembayaran, 0, ',', '.'); ?></strong>
                 </div>
-                <div class="modal-body">
-                    <div class="payment-total-box">
-                        <span>Total Biaya Peminjaman</span>
-                        <strong id="modalTotalAmount">Rp <?php echo number_format($first_total_pembayaran, 0, ',', '.'); ?></strong>
+
+                <form id="paymentForm" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="peminjaman_id" id="modalPeminjamanId">
+
+                    <div class="form-group">
+                        <label for="paymentMethod" class="form-label-dt">Pilih Metode Pembayaran</label>
+                        <select class="form-control-dt" id="paymentMethod" name="payment_method" required>
+                            <option value="Bank Mandiri - 1090020254033 / Ferry Anugerah">Bank Mandiri (1090020254033) / Ferry Anugerah</option>
+                            <option value="Bank BNI - 1905760900 / Ferry Anugerah">Bank BNI (1905760900) / Ferry Anugerah</option>
+                            <option value="ShopeePay - 081214809536 / Ferry Anugerah">ShopeePay (081214809536) / Ferry Anugerah</option>
+                        </select>
                     </div>
 
-                    <form id="paymentForm" method="POST" enctype="multipart/form-data">
-                        <input type="hidden" name="peminjaman_id" id="modalPeminjamanId">
+                    <div class="form-group">
+                        <label for="paymentProof" class="form-label-dt">Upload Bukti Pembayaran</label>
+                        <input type="file" class="form-control-dt" id="paymentProof" name="payment_proof" accept="image/*" required>
+                    </div>
 
-                        <div class="mb-3">
-                            <label for="paymentMethod" class="form-label-dt">Pilih Metode Pembayaran</label>
-                            <select class="form-control-dt" id="paymentMethod" name="payment_method" required>
-                                <option value="Bank Mandiri - 1090020254033 / Ferry Anugerah">Bank Mandiri (1090020254033) / Ferry Anugerah</option>
-                                <option value="Bank BNI - 1905760900 / Ferry Anugerah">Bank BNI (1905760900) / Ferry Anugerah</option>
-                                <option value="ShopeePay - 081214809536 / Ferry Anugerah">ShopeePay (081214809536) / Ferry Anugerah</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="paymentProof" class="form-label-dt">Upload Bukti Pembayaran</label>
-                            <input type="file" class="form-control" id="paymentProof" name="payment_proof" accept="image/*" required>
-                        </div>
-
-                        <button type="submit" name="action" value="bayar" class="btn-brand w-100" style="padding: 11px 16px;">
-                            <i class="fas fa-paper-plane"></i> Kirim Bukti Pembayaran
-                        </button>
-                    </form>
-                </div>
+                    <button type="submit" name="action" value="bayar" class="btn-brand" style="width: 100%; padding: 11px 16px;">
+                        <i class="fas fa-paper-plane"></i> Kirim Bukti Pembayaran
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -334,39 +329,56 @@ function dt_status_class($status) {
     </nav>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const paymentModal = document.getElementById('paymentModal');
+            const closeBtn = document.getElementById('closePaymentModal');
+
+            function closeModal() {
+                paymentModal.classList.remove('active');
+            }
+
             document.querySelectorAll('.bayarBtn').forEach(button => {
                 button.addEventListener('click', function () {
                     document.getElementById('modalPeminjamanId').value = this.dataset.peminjamanId;
                     if (this.dataset.totalAmount) {
                         document.getElementById('modalTotalAmount').textContent = 'Rp ' + this.dataset.totalAmount;
                     }
+                    paymentModal.classList.add('active');
                 });
             });
+
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            paymentModal.addEventListener('click', function (e) {
+                if (e.target === paymentModal) closeModal();
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeModal();
+            });
         });
 
-        $(document).ready(function () {
-            const table = $('#peminjamanTable').DataTable({
-                dom: 'lrtip',
-                language: {
-                    lengthMenu: "Tampilkan _MENU_ entri",
-                    info: "Menampilkan _START_–_END_ dari _TOTAL_ peminjaman",
-                    infoEmpty: "Belum ada peminjaman aktif",
-                    emptyTable: "Belum ada peminjaman aktif saat ini.",
-                    paginate: {
-                        next: "Berikutnya",
-                        previous: "Sebelumnya"
+        if (window.jQuery && $.fn.DataTable) {
+            $(document).ready(function () {
+                const table = $('#peminjamanTable').DataTable({
+                    dom: 'lrtip',
+                    language: {
+                        lengthMenu: "Tampilkan _MENU_ entri",
+                        info: "Menampilkan _START_–_END_ dari _TOTAL_ peminjaman",
+                        infoEmpty: "Belum ada peminjaman aktif",
+                        emptyTable: "Belum ada peminjaman aktif saat ini.",
+                        paginate: {
+                            next: "Berikutnya",
+                            previous: "Sebelumnya"
+                        }
                     }
-                }
-            });
+                });
 
-            $('#searchInput').on('input', function () {
-                table.search(this.value).draw();
+                $('#searchInput').on('input', function () {
+                    table.search(this.value).draw();
+                });
             });
-        });
+        }
 
         const hamburger = document.getElementById('hamburger');
         const navbar = document.getElementById('navbar');
