@@ -119,7 +119,7 @@ function dt_order_status_class($status) {
     <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body class="app-body">
+<body class="app-body has-bottom-nav">
     <header class="app-header">
         <div class="app-header-inner">
             <a href="divisi_dashboard.php" class="brand-lockup">
@@ -132,6 +132,7 @@ function dt_order_status_class($status) {
                 </span>
             </a>
 
+            <a href="logout.php" class="header-mobile-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
             <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
@@ -165,7 +166,7 @@ function dt_order_status_class($status) {
         <section class="surface-card">
             <div class="surface-card-body">
                 <div class="dt-table-wrap">
-                    <table id="orderTable" class="dt-table">
+                    <table id="orderTable" class="dt-table dt-mobile-list">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -180,16 +181,16 @@ function dt_order_status_class($status) {
                             <?php foreach ($orders as $row): ?>
                                 <?php $badgeClass = dt_order_status_class($row['status']); ?>
                                 <tr>
-                                    <td class="cell-mono">#<?php echo (int)$row['id']; ?></td>
-                                    <td class="cell-strong"><?php echo htmlspecialchars($row['username']); ?></td>
-                                    <td class="cell-mono"><?php echo htmlspecialchars($row['created_at']); ?></td>
-                                    <td class="cell-mono">Rp <?php echo number_format((float)$row['total_amount'], 0, ',', '.'); ?></td>
-                                    <td>
+                                    <td class="cell-mono col-primary" data-label="ID">Peminjaman #<?php echo (int)$row['id']; ?></td>
+                                    <td class="cell-strong" data-label="Peminjam"><?php echo htmlspecialchars($row['username']); ?></td>
+                                    <td class="cell-mono" data-label="Tanggal"><?php echo htmlspecialchars($row['created_at']); ?></td>
+                                    <td class="cell-mono" data-label="Total Biaya">Rp <?php echo number_format((float)$row['total_amount'], 0, ',', '.'); ?></td>
+                                    <td data-label="Status">
                                         <span class="status-badge <?php echo $badgeClass; ?>">
                                             <?php echo htmlspecialchars($row['status']); ?>
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="col-actions" data-label="Aksi">
                                         <?php if ($row['status'] == 'Pending'): ?>
                                             <a href="order-management.php?confirm_peminjaman=<?php echo (int)$row['id']; ?>" class="btn-brand btn-sm-action">
                                                 <i class="fas fa-check"></i> Konfirmasi Peminjaman
@@ -217,6 +218,12 @@ function dt_order_status_class($status) {
             <p>Portal Divisi Alat</p>
         </div>
     </footer>
+
+    <nav class="mobile-bottom-nav" aria-label="Navigasi Cepat Divisi Alat">
+        <a href="divisi_dashboard.php"><i class="fas fa-house"></i><span>Home</span></a>
+        <a href="inventory_management.php"><i class="fas fa-boxes-stacked"></i><span>Inventory</span></a>
+        <a href="order-management.php" class="active"><i class="fas fa-clipboard-check"></i><span>Peminjaman</span></a>
+    </nav>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>

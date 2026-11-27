@@ -146,7 +146,7 @@ function dt_status_class($status) {
     <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body class="app-body">
+<body class="app-body has-bottom-nav">
     <header class="app-header">
         <div class="app-header-inner">
             <a href="home.php" class="brand-lockup">
@@ -159,6 +159,7 @@ function dt_status_class($status) {
                 </span>
             </a>
 
+            <a href="logout.php" class="header-mobile-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
             <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
@@ -203,7 +204,7 @@ function dt_status_class($status) {
 
             <div class="surface-card-body">
                 <div class="dt-table-wrap">
-                    <table id="peminjamanTable" class="dt-table">
+                    <table id="peminjamanTable" class="dt-table dt-mobile-list">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -223,22 +224,22 @@ function dt_status_class($status) {
                                 $badgeClass = dt_status_class($row['loan_status']);
                             ?>
                                 <tr>
-                                    <td class="cell-mono"><?php echo $no++; ?></td>
-                                    <td class="cell-strong"><?php echo htmlspecialchars($row['item_name']); ?></td>
-                                    <td class="cell-mono"><?php echo (int)$row['quantity']; ?></td>
-                                    <td class="cell-mono"><?php echo htmlspecialchars($row['borrow_date']); ?></td>
-                                    <td class="cell-mono"><?php echo htmlspecialchars($row['return_date']); ?></td>
-                                    <td>
+                                    <td class="cell-mono col-index" data-label="#"><?php echo $no++; ?></td>
+                                    <td class="cell-strong col-primary" data-label="Barang"><?php echo htmlspecialchars($row['item_name']); ?></td>
+                                    <td class="cell-mono" data-label="Jumlah"><?php echo (int)$row['quantity']; ?> unit</td>
+                                    <td class="cell-mono" data-label="Tgl Pinjam"><?php echo htmlspecialchars($row['borrow_date']); ?></td>
+                                    <td class="cell-mono" data-label="Tgl Kembali"><?php echo htmlspecialchars($row['return_date']); ?></td>
+                                    <td data-label="Status">
                                         <span class="status-badge <?php echo $badgeClass; ?>">
                                             <?php echo htmlspecialchars(ucfirst($row['loan_status'])); ?>
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="col-actions" data-label="Detail">
                                         <a href="order-details.php?peminjaman_id=<?php echo $row['peminjaman_id']; ?>" class="btn-outline-subtle btn-sm-action">
                                             <i class="fas fa-eye"></i> Detail
                                         </a>
                                     </td>
-                                    <td>
+                                    <td class="col-actions" data-label="Aksi">
                                         <form method="POST" class="cell-actions">
                                             <input type="hidden" name="peminjaman_id" value="<?php echo $row['peminjaman_id']; ?>">
                                             <?php if ($row['loan_status'] == 'Dikonfirmasi') { ?>
@@ -324,6 +325,13 @@ function dt_status_class($status) {
             <p>Portal Peminjam</p>
         </div>
     </footer>
+
+    <nav class="mobile-bottom-nav" aria-label="Navigasi Cepat Peminjam">
+        <a href="home.php" class="active"><i class="fas fa-house"></i><span>Home</span></a>
+        <a href="peminjam_dashboard.php"><i class="fas fa-boxes-stacked"></i><span>Katalog</span></a>
+        <a href="shopping-cart.php"><i class="fas fa-cart-shopping"></i><span>Keranjang</span></a>
+        <a href="order-history.php"><i class="fas fa-clock-rotate-left"></i><span>Riwayat</span></a>
+    </nav>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

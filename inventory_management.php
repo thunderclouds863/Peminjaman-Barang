@@ -87,7 +87,7 @@ if ($items_result) {
   <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body class="app-body">
+<body class="app-body has-bottom-nav">
   <header class="app-header">
     <div class="app-header-inner">
       <a href="divisi_dashboard.php" class="brand-lockup">
@@ -100,6 +100,7 @@ if ($items_result) {
         </span>
       </a>
 
+      <a href="logout.php" class="header-mobile-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
       <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
         <i class="fas fa-bars"></i>
       </button>
@@ -133,7 +134,7 @@ if ($items_result) {
     <section class="surface-card">
       <div class="surface-card-body">
         <div class="dt-table-wrap">
-          <table id="itemTable" class="dt-table">
+          <table id="itemTable" class="dt-table dt-mobile-list">
             <thead>
               <tr>
                 <th>Nama Alat</th>
@@ -150,11 +151,11 @@ if ($items_result) {
                 $stockClass = $stock <= 0 ? 'empty' : ($stock <= 2 ? 'low' : '');
                 ?>
                 <tr>
-                  <td class="cell-strong"><?= htmlspecialchars($row['name']) ?></td>
-                  <td><?= htmlspecialchars($row['description']) ?></td>
-                  <td class="cell-mono">Rp <?= number_format((float)$row['price'], 0, ',', '.') ?></td>
-                  <td><span class="stock-pill <?= $stockClass ?>"><?= $stock ?> unit</span></td>
-                  <td>
+                  <td class="cell-strong col-primary" data-label="Nama Alat"><?= htmlspecialchars($row['name']) ?></td>
+                  <td data-label="Deskripsi"><?= htmlspecialchars($row['description']) ?></td>
+                  <td class="cell-mono" data-label="Harga / Minggu">Rp <?= number_format((float)$row['price'], 0, ',', '.') ?></td>
+                  <td data-label="Stok"><span class="stock-pill <?= $stockClass ?>"><?= $stock ?> unit</span></td>
+                  <td class="col-actions" data-label="Aksi">
                     <div class="cell-actions">
                       <button type="button"
                         class="btn-outline-subtle btn-sm-action edit-item-btn"
@@ -201,7 +202,7 @@ if ($items_result) {
             <label class="form-label-dt" for="add-description">Deskripsi</label>
             <textarea id="add-description" name="description" class="form-control-dt" rows="3" placeholder="Kategori atau keterangan alat" required></textarea>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="modal-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div class="form-group">
               <label class="form-label-dt" for="add-price">Harga Sewa (Rp)</label>
               <input type="number" id="add-price" name="price" step="0.01" class="form-control-dt" required>
@@ -239,7 +240,7 @@ if ($items_result) {
             <label class="form-label-dt" for="edit-description">Deskripsi</label>
             <textarea name="description" id="edit-description" class="form-control-dt" rows="3" required></textarea>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="modal-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div class="form-group">
               <label class="form-label-dt" for="edit-price">Harga Sewa (Rp)</label>
               <input type="number" name="price" id="edit-price" step="0.01" class="form-control-dt" required>
@@ -264,6 +265,12 @@ if ($items_result) {
       <p>Portal Divisi Alat</p>
     </div>
   </footer>
+
+  <nav class="mobile-bottom-nav" aria-label="Navigasi Cepat Divisi Alat">
+    <a href="divisi_dashboard.php"><i class="fas fa-house"></i><span>Home</span></a>
+    <a href="inventory_management.php" class="active"><i class="fas fa-boxes-stacked"></i><span>Inventory</span></a>
+    <a href="order-management.php"><i class="fas fa-clipboard-check"></i><span>Peminjaman</span></a>
+  </nav>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>

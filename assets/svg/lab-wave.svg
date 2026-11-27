@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 220" fill="none" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="pulseFade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9B1C2E" stop-opacity="0"/>
+      <stop offset="18%" stop-color="#9B1C2E" stop-opacity="0.22"/>
+      <stop offset="50%" stop-color="#9B1C2E" stop-opacity="0.34"/>
+      <stop offset="82%" stop-color="#9B1C2E" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#9B1C2E" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="pulseArea" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#9B1C2E" stop-opacity="0.09"/>
+      <stop offset="100%" stop-color="#9B1C2E" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Calibration baseline & ticks -->
+  <line x1="0" y1="142" x2="1200" y2="142" stroke="#181C24" stroke-opacity="0.06" stroke-width="1"/>
+  <g stroke="#181C24" stroke-opacity="0.08" stroke-width="1">
+    <line x1="120" y1="136" x2="120" y2="148"/>
+    <line x1="240" y1="133" x2="240" y2="151"/>
+    <line x1="360" y1="136" x2="360" y2="148"/>
+    <line x1="480" y1="133" x2="480" y2="151"/>
+    <line x1="600" y1="131" x2="600" y2="153"/>
+    <line x1="720" y1="133" x2="720" y2="151"/>
+    <line x1="840" y1="136" x2="840" y2="148"/>
+    <line x1="960" y1="133" x2="960" y2="151"/>
+    <line x1="1080" y1="136" x2="1080" y2="148"/>
+  </g>
+  <!-- Subtle physiology waveform area -->
+  <path d="M0 142 L260 142 L292 142 L310 124 L326 142 L352 142 L366 154 L384 54 L402 174 L418 118 L434 142 L510 142 L548 142 L566 128 L582 142 L680 142 L712 142 L728 152 L746 66 L764 168 L780 122 L796 142 L882 142 L900 130 L916 142 L1200 142 L1200 220 L0 220 Z" fill="url(#pulseArea)"/>
+  <!-- Precision waveform stroke -->
+  <path d="M0 142 L260 142 L292 142 L310 124 L326 142 L352 142 L366 154 L384 54 L402 174 L418 118 L434 142 L510 142 L548 142 L566 128 L582 142 L680 142 L712 142 L728 152 L746 66 L764 168 L780 122 L796 142 L882 142 L900 130 L916 142 L1200 142" stroke="url(#pulseFade)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Accent nodes at signal peaks -->
+  <circle cx="384" cy="54" r="3.5" fill="#9B1C2E" fill-opacity="0.45"/>
+  <circle cx="384" cy="54" r="8" fill="#9B1C2E" fill-opacity="0.1"/>
+  <circle cx="746" cy="66" r="3" fill="#9B1C2E" fill-opacity="0.38"/>
+</svg>

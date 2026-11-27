@@ -94,7 +94,7 @@ if ($result) {
     <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body class="app-body">
+<body class="app-body has-bottom-nav">
     <header class="app-header">
         <div class="app-header-inner">
             <a href="bendahara_dashboard.php" class="brand-lockup">
@@ -107,6 +107,7 @@ if ($result) {
                 </span>
             </a>
 
+            <a href="?logout=true" class="header-mobile-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
             <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
@@ -131,7 +132,7 @@ if ($result) {
         <section class="surface-card">
             <div class="surface-card-body">
                 <div class="dt-table-wrap">
-                    <table id="orderTable" class="dt-table">
+                    <table id="orderTable" class="dt-table dt-mobile-list">
                         <thead>
                             <tr>
                                 <th>ID Peminjaman</th>
@@ -144,14 +145,14 @@ if ($result) {
                         <tbody>
                             <?php foreach ($pending_payments as $row): ?>
                                 <tr>
-                                    <td class="cell-mono">#<?php echo (int)$row['id']; ?></td>
-                                    <td class="cell-mono">Rp <?php echo number_format((float)($row['total_amount'] ?? 0), 0, ',', '.'); ?></td>
-                                    <td>
+                                    <td class="cell-mono col-primary" data-label="ID Peminjaman">Peminjaman #<?php echo (int)$row['id']; ?></td>
+                                    <td class="cell-mono" data-label="Total Nominal">Rp <?php echo number_format((float)($row['total_amount'] ?? 0), 0, ',', '.'); ?></td>
+                                    <td data-label="Status">
                                         <span class="status-badge status-menunggu-pembayaran">
                                             <?php echo htmlspecialchars($row['status']); ?>
                                         </span>
                                     </td>
-                                    <td>
+                                    <td data-label="Bukti">
                                         <?php
                                         $upload_dir = 'uploads/';
                                         $peminjaman_id = $row['id'];
@@ -179,7 +180,7 @@ if ($result) {
                                             </span>
                                         <?php endif; ?>
                                     </td>
-                                    <td>
+                                    <td class="col-actions" data-label="Aksi">
                                         <?php if ($row['status'] == 'Menunggu Konfirmasi Pembayaran'): ?>
                                             <form method="POST" class="cell-actions">
                                                 <input type="hidden" name="peminjaman_id" value="<?php echo (int)$row['id']; ?>">

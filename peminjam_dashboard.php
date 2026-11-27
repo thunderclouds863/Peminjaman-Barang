@@ -39,7 +39,7 @@ if ($result && $result->num_rows > 0) {
     <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body class="app-body">
+<body class="app-body has-bottom-nav">
     <header class="app-header">
         <div class="app-header-inner">
             <a href="home.php" class="brand-lockup">
@@ -52,6 +52,7 @@ if ($result && $result->num_rows > 0) {
                 </span>
             </a>
 
+            <a href="logout.php" class="header-mobile-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
             <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
@@ -84,15 +85,22 @@ if ($result && $result->num_rows > 0) {
 
         <section class="surface-card">
             <div class="surface-card-header">
-                <div class="search-field" style="max-width: 380px;">
-                    <i class="fas fa-magnifying-glass"></i>
-                    <input type="text" id="searchInput" placeholder="Cari nama alat atau deskripsi...">
+                <div class="toolbar-row">
+                    <div class="search-field" style="max-width: 360px;">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Cari nama alat atau deskripsi...">
+                    </div>
+                    <div class="filter-pills" role="group" aria-label="Filter Ketersediaan">
+                        <button type="button" class="filter-pill active" data-stock-filter="all">Semua</button>
+                        <button type="button" class="filter-pill" data-stock-filter="available">Tersedia</button>
+                        <button type="button" class="filter-pill" data-stock-filter="low">Stok Menipis</button>
+                    </div>
                 </div>
             </div>
 
             <div class="surface-card-body">
                 <div class="dt-table-wrap">
-                    <table id="peminjamanTable" class="dt-table">
+                    <table id="peminjamanTable" class="dt-table dt-mobile-list">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -111,12 +119,12 @@ if ($result && $result->num_rows > 0) {
                                     $stock = (int)($row['stock'] ?? 0);
                                     $stockClass = $stock <= 0 ? 'empty' : ($stock <= 2 ? 'low' : '');
                                     echo "<tr class='product-row'>
-                                            <td class='cell-mono'>" . $no++ . "</td>
-                                            <td class='cell-strong'>" . htmlspecialchars($row['name']) . "</td>
-                                            <td>" . htmlspecialchars($row['description']) . "</td>
-                                            <td><span class='stock-pill {$stockClass}'>{$stock} unit</span></td>
-                                            <td class='cell-mono'>Rp " . number_format($row['price'], 0, ',', '.') . "</td>
-                                            <td>
+                                            <td class='cell-mono col-index' data-label='No'>" . $no++ . "</td>
+                                            <td class='cell-strong col-primary' data-label='Nama Alat'>" . htmlspecialchars($row['name']) . "</td>
+                                            <td data-label='Deskripsi'>" . htmlspecialchars($row['description']) . "</td>
+                                            <td data-label='Stok'><span class='stock-pill {$stockClass}'>{$stock} unit</span></td>
+                                            <td class='cell-mono' data-label='Harga / Minggu'>Rp " . number_format($row['price'], 0, ',', '.') . "</td>
+                                            <td class='col-actions' data-label='Aksi'>
                                                 <button type='button' class='btn-brand btn-sm-action' onclick='addToCart(" . (int)$row['id'] . ")'>
                                                     <i class='fas fa-cart-plus'></i> Tambah
                                                 </button>
@@ -139,6 +147,13 @@ if ($result && $result->num_rows > 0) {
         </div>
     </footer>
 
+    <nav class="mobile-bottom-nav" aria-label="Navigasi Cepat Peminjam">
+        <a href="home.php"><i class="fas fa-house"></i><span>Home</span></a>
+        <a href="peminjam_dashboard.php" class="active"><i class="fas fa-boxes-stacked"></i><span>Katalog</span></a>
+        <a href="shopping-cart.php"><i class="fas fa-cart-shopping"></i><span>Keranjang</span></a>
+        <a href="order-history.php"><i class="fas fa-clock-rotate-left"></i><span>Riwayat</span></a>
+    </nav>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script>
@@ -147,6 +162,18 @@ if ($result && $result->num_rows > 0) {
         }
 
         $(document).ready(function () {
+            let activeStockFilter = 'all';
+
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                if (activeStockFilter === 'all') return true;
+                const stockText = data[3] || '';
+                const match = stockText.match(/\d+/);
+                const qty = match ? parseInt(match[0], 10) : 0;
+                if (activeStockFilter === 'available') return qty > 0;
+                if (activeStockFilter === 'low') return qty > 0 && qty <= 2;
+                return true;
+            });
+
             const table = $('#peminjamanTable').DataTable({
                 dom: 'lrtip',
                 language: {
@@ -163,6 +190,13 @@ if ($result && $result->num_rows > 0) {
 
             $('#searchInput').on('input', function () {
                 table.search(this.value).draw();
+            });
+
+            $('.filter-pill').on('click', function () {
+                $('.filter-pill').removeClass('active');
+                $(this).addClass('active');
+                activeStockFilter = $(this).data('stock-filter');
+                table.draw();
             });
         });
 
