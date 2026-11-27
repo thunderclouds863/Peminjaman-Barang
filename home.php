@@ -204,7 +204,7 @@ function dt_status_class($status) {
 
             <div class="surface-card-body">
                 <div class="dt-table-wrap">
-                    <table id="peminjamanTable" class="dt-table">
+                    <table id="peminjamanTable" class="dt-table dt-mobile-list">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -224,22 +224,22 @@ function dt_status_class($status) {
                                 $badgeClass = dt_status_class($row['loan_status']);
                             ?>
                                 <tr>
-                                    <td class="cell-mono"><?php echo $no++; ?></td>
-                                    <td class="cell-strong"><?php echo htmlspecialchars($row['item_name']); ?></td>
-                                    <td class="cell-mono"><?php echo (int)$row['quantity']; ?></td>
-                                    <td class="cell-mono"><?php echo htmlspecialchars($row['borrow_date']); ?></td>
-                                    <td class="cell-mono"><?php echo htmlspecialchars($row['return_date']); ?></td>
-                                    <td>
+                                    <td class="cell-mono col-index" data-label="#"><?php echo $no++; ?></td>
+                                    <td class="cell-strong col-primary" data-label="Barang"><?php echo htmlspecialchars($row['item_name']); ?></td>
+                                    <td class="cell-mono" data-label="Jumlah"><?php echo (int)$row['quantity']; ?> unit</td>
+                                    <td class="cell-mono" data-label="Tgl Pinjam"><?php echo htmlspecialchars($row['borrow_date']); ?></td>
+                                    <td class="cell-mono" data-label="Tgl Kembali"><?php echo htmlspecialchars($row['return_date']); ?></td>
+                                    <td data-label="Status">
                                         <span class="status-badge <?php echo $badgeClass; ?>">
                                             <?php echo htmlspecialchars(ucfirst($row['loan_status'])); ?>
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="col-actions" data-label="Detail">
                                         <a href="order-details.php?peminjaman_id=<?php echo $row['peminjaman_id']; ?>" class="btn-outline-subtle btn-sm-action">
                                             <i class="fas fa-eye"></i> Detail
                                         </a>
                                     </td>
-                                    <td>
+                                    <td class="col-actions" data-label="Aksi">
                                         <form method="POST" class="cell-actions">
                                             <input type="hidden" name="peminjaman_id" value="<?php echo $row['peminjaman_id']; ?>">
                                             <?php if ($row['loan_status'] == 'Dikonfirmasi') { ?>

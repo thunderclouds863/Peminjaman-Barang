@@ -139,7 +139,7 @@ function dt_history_status_class($status) {
             <div class="surface-card-body">
                 <?php if (count($orders) > 0): ?>
                     <div class="dt-table-wrap">
-                        <table id="orderTable" class="dt-table">
+                        <table id="orderTable" class="dt-table dt-mobile-list">
                             <thead>
                                 <tr>
                                     <th>Order ID</th>
@@ -154,16 +154,16 @@ function dt_history_status_class($status) {
                                 <?php foreach ($orders as $order): ?>
                                     <?php $badgeClass = dt_history_status_class($order['loan_status']); ?>
                                     <tr>
-                                        <td class="cell-mono">#<?php echo (int)$order['peminjaman_id']; ?></td>
-                                        <td class="cell-strong"><?php echo htmlspecialchars($order['item_name']); ?></td>
-                                        <td class="cell-mono"><?php echo htmlspecialchars($order['borrow_date']); ?></td>
-                                        <td class="cell-mono">Rp <?php echo number_format($order['total_amount'], 0, ',', '.'); ?></td>
-                                        <td>
+                                        <td class="cell-mono" data-label="Order ID">#<?php echo (int)$order['peminjaman_id']; ?></td>
+                                        <td class="cell-strong col-primary" data-label="Alat"><?php echo htmlspecialchars($order['item_name']); ?></td>
+                                        <td class="cell-mono" data-label="Tanggal"><?php echo htmlspecialchars($order['borrow_date']); ?></td>
+                                        <td class="cell-mono" data-label="Total Biaya">Rp <?php echo number_format($order['total_amount'], 0, ',', '.'); ?></td>
+                                        <td data-label="Status">
                                             <span class="status-badge <?php echo $badgeClass; ?>">
                                                 <?php echo htmlspecialchars($order['loan_status']); ?>
                                             </span>
                                         </td>
-                                        <td>
+                                        <td class="col-actions" data-label="Aksi">
                                             <?php if ($order['loan_status'] == 'Siap Diambil' || $order['loan_status'] == 'Sedang Dipinjam'): ?>
                                                 <form method="POST" class="cell-actions">
                                                     <input type="hidden" name="order_id" value="<?php echo (int)$order['peminjaman_id']; ?>">

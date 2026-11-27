@@ -157,7 +157,7 @@ $badgeClass = $status_map[$peminjaman['status']] ?? 'status-pending';
                 </h2>
 
                 <div class="dt-table-wrap">
-                    <table class="dt-table">
+                    <table class="dt-table dt-mobile-list">
                         <thead>
                             <tr>
                                 <th>Item ID</th>
@@ -178,12 +178,12 @@ $badgeClass = $status_map[$peminjaman['status']] ?? 'status-pending';
                                 $total_peminjaman_amount += $total_item_price;
 
                                 echo "<tr>
-                                        <td class='cell-mono'>#{$item['item_id']}</td>
-                                        <td class='cell-strong'>" . htmlspecialchars($item['item_name']) . "</td>
-                                        <td class='cell-mono'>{$item['quantity']}</td>
-                                        <td class='cell-mono'>Rp " . number_format($item['item_price'], 0, ',', '.') . "</td>
-                                        <td class='cell-mono'>Rp " . number_format($weekly_price, 0, ',', '.') . "</td>
-                                        <td class='cell-mono' style='font-weight:700;'>Rp " . number_format($total_item_price, 0, ',', '.') . "</td>
+                                        <td class='cell-mono col-index' data-label='Item ID'>#{$item['item_id']}</td>
+                                        <td class='cell-strong col-primary' data-label='Nama Alat'>" . htmlspecialchars($item['item_name']) . "</td>
+                                        <td class='cell-mono' data-label='Jumlah'>{$item['quantity']} unit</td>
+                                        <td class='cell-mono' data-label='Harga / Minggu'>Rp " . number_format($item['item_price'], 0, ',', '.') . "</td>
+                                        <td class='cell-mono' data-label='Subtotal / Minggu'>Rp " . number_format($weekly_price, 0, ',', '.') . "</td>
+                                        <td class='cell-mono' data-label='Total Biaya' style='font-weight:700;'>Rp " . number_format($total_item_price, 0, ',', '.') . "</td>
                                       </tr>";
                             }
                             ?>
