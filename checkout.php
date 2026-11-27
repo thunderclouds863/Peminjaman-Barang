@@ -113,7 +113,7 @@ if (!empty($cart_items)) {
     <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body class="app-body">
+<body class="app-body has-bottom-nav">
     <header class="app-header">
         <div class="app-header-inner">
             <a href="home.php" class="brand-lockup">
@@ -126,6 +126,7 @@ if (!empty($cart_items)) {
                 </span>
             </a>
 
+            <a href="logout.php" class="header-mobile-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
             <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
@@ -177,7 +178,7 @@ if (!empty($cart_items)) {
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <div class="empty-state-icon"><i class="fas fa-cart-shopping"></i></div>
+                        <img src="assets/svg/empty-cart.svg" alt="" class="empty-state-svg" aria-hidden="true">
                         <h3>Keranjang Kosong</h3>
                         <p>Tambahkan alat terlebih dahulu sebelum melakukan checkout.</p>
                         <a href="peminjam_dashboard.php" class="btn-brand">Lihat Katalog Alat</a>
@@ -195,10 +196,15 @@ if (!empty($cart_items)) {
                         <span class="cell-mono">Rp <?php echo number_format($total_amount, 0, ',', '.'); ?></span>
                     </div>
 
-                    <form action="checkout.php" method="POST" style="margin-top: 16px;">
+                    <form action="checkout.php" method="POST" style="margin-top: 16px;" data-weekly-base="<?php echo (float)$total_amount; ?>">
                         <div class="form-group">
                             <label for="return_at" class="form-label-dt">Pilih Tanggal Pengembalian</label>
                             <input type="date" id="return_at" name="return_at" class="form-control-dt" min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>" required>
+                        </div>
+
+                        <div class="live-estimate-box" id="liveEstimateBox">
+                            <span id="liveEstimateLabel">Estimasi Total (1 minggu)</span>
+                            <strong id="liveEstimateValue">Rp <?php echo number_format($total_amount, 0, ',', '.'); ?></strong>
                         </div>
 
                         <p style="font-size: 12.5px; color: var(--ink-500); margin: 0 0 18px;">
@@ -221,7 +227,34 @@ if (!empty($cart_items)) {
         </div>
     </footer>
 
+    <nav class="mobile-bottom-nav" aria-label="Navigasi Cepat Peminjam">
+        <a href="home.php"><i class="fas fa-house"></i><span>Home</span></a>
+        <a href="peminjam_dashboard.php"><i class="fas fa-boxes-stacked"></i><span>Katalog</span></a>
+        <a href="shopping-cart.php" class="active"><i class="fas fa-cart-shopping"></i><span>Keranjang</span></a>
+        <a href="order-history.php"><i class="fas fa-clock-rotate-left"></i><span>Riwayat</span></a>
+    </nav>
+
     <script>
+        const returnInput = document.getElementById('return_at');
+        const checkoutForm = returnInput ? returnInput.closest('form') : null;
+        const estLabel = document.getElementById('liveEstimateLabel');
+        const estValue = document.getElementById('liveEstimateValue');
+
+        if (returnInput && checkoutForm && estLabel && estValue) {
+            const weeklyBase = parseFloat(checkoutForm.dataset.weeklyBase || '0') || 0;
+            returnInput.addEventListener('change', function () {
+                if (!this.value) return;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const chosen = new Date(this.value + 'T00:00:00');
+                const diffDays = Math.max(1, Math.ceil((chosen - today) / (1000 * 60 * 60 * 24)));
+                const weeks = Math.max(1, Math.ceil(diffDays / 7));
+                const total = weeklyBase * weeks;
+                estLabel.textContent = `Estimasi Total (${weeks} minggu)`;
+                estValue.textContent = 'Rp ' + total.toLocaleString('id-ID');
+            });
+        }
+
         const hamburger = document.getElementById('hamburger');
         const navbar = document.getElementById('navbar');
         hamburger.addEventListener('click', () => {

@@ -91,7 +91,7 @@ function dt_history_status_class($status) {
     <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body class="app-body">
+<body class="app-body has-bottom-nav">
     <header class="app-header">
         <div class="app-header-inner">
             <a href="home.php" class="brand-lockup">
@@ -104,6 +104,7 @@ function dt_history_status_class($status) {
                 </span>
             </a>
 
+            <a href="logout.php" class="header-mobile-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
             <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
@@ -186,7 +187,7 @@ function dt_history_status_class($status) {
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <div class="empty-state-icon"><i class="fas fa-clock-rotate-left"></i></div>
+                        <img src="assets/svg/empty-history.svg" alt="" class="empty-state-svg" aria-hidden="true">
                         <h3>Belum Ada Riwayat Peminjaman</h3>
                         <p>Transaksi peminjaman alat yang Anda ajukan akan tampil di sini.</p>
                         <a href="peminjam_dashboard.php" class="btn-brand">Mulai Pinjam Alat</a>
@@ -202,6 +203,13 @@ function dt_history_status_class($status) {
             <p>Portal Peminjam</p>
         </div>
     </footer>
+
+    <nav class="mobile-bottom-nav" aria-label="Navigasi Cepat Peminjam">
+        <a href="home.php"><i class="fas fa-house"></i><span>Home</span></a>
+        <a href="peminjam_dashboard.php"><i class="fas fa-boxes-stacked"></i><span>Katalog</span></a>
+        <a href="shopping-cart.php"><i class="fas fa-cart-shopping"></i><span>Keranjang</span></a>
+        <a href="order-history.php" class="active"><i class="fas fa-clock-rotate-left"></i><span>Riwayat</span></a>
+    </nav>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>

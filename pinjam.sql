@@ -11,14 +11,27 @@ USE peminjaman_alat;
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(120) UNIQUE NULL,
     password VARCHAR(255) NOT NULL,
     role ENUM('Divisi Alat', 'Bendahara', 'Peminjam Alat') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO users (username, password, role) VALUES
-('divisialat', 'divisialat123', 'Divisi Alat'),
-('bendahara', 'bendahara123', 'Bendahara');
+INSERT INTO users (username, email, password, role) VALUES
+('divisialat', 'divisialat@dtools.lab', 'divisialat123', 'Divisi Alat'),
+('bendahara', 'bendahara@dtools.lab', 'bendahara123', 'Bendahara');
+
+-- Tabel token reset password (disimpan dalam bentuk hash SHA-256)
+CREATE TABLE password_resets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token_hash CHAR(64) NOT NULL UNIQUE,
+    expires_at DATETIME NOT NULL,
+    used_at DATETIME NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_password_resets_user_created (user_id, created_at)
+);
 
 -- Tabel barang/item
 CREATE TABLE item (

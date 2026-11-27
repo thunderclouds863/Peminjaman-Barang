@@ -94,7 +94,7 @@ if ($result) {
     <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body class="app-body">
+<body class="app-body has-bottom-nav">
     <header class="app-header">
         <div class="app-header-inner">
             <a href="bendahara_dashboard.php" class="brand-lockup">
@@ -107,6 +107,7 @@ if ($result) {
                 </span>
             </a>
 
+            <a href="?logout=true" class="header-mobile-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
             <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
