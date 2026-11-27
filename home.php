@@ -146,7 +146,7 @@ function dt_status_class($status) {
     <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
-<body class="app-body">
+<body class="app-body has-bottom-nav">
     <header class="app-header">
         <div class="app-header-inner">
             <a href="home.php" class="brand-lockup">
@@ -159,6 +159,7 @@ function dt_status_class($status) {
                 </span>
             </a>
 
+            <a href="logout.php" class="header-mobile-logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
             <button class="nav-toggle" id="hamburger" type="button" aria-label="Toggle Navigation" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
@@ -324,6 +325,13 @@ function dt_status_class($status) {
             <p>Portal Peminjam</p>
         </div>
     </footer>
+
+    <nav class="mobile-bottom-nav" aria-label="Navigasi Cepat Peminjam">
+        <a href="home.php" class="active"><i class="fas fa-house"></i><span>Home</span></a>
+        <a href="peminjam_dashboard.php"><i class="fas fa-boxes-stacked"></i><span>Katalog</span></a>
+        <a href="shopping-cart.php"><i class="fas fa-cart-shopping"></i><span>Keranjang</span></a>
+        <a href="order-history.php"><i class="fas fa-clock-rotate-left"></i><span>Riwayat</span></a>
+    </nav>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

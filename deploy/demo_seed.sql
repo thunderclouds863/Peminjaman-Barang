@@ -1,7 +1,7 @@
 -- Akun & data demo (aplikasi ini menyimpan password plaintext, sesuai kode asli)
 -- Akun bawaan pinjam.sql: divisialat/divisialat123, bendahara/bendahara123
 USE peminjaman_alat;
-INSERT INTO users (username, password, role) VALUES ('peminjam1', 'demo123', 'Peminjam Alat');
+INSERT INTO users (username, email, password, role) VALUES ('peminjam1', 'peminjam1@dtools.lab', 'demo123', 'Peminjam Alat');
 INSERT INTO item (id, name, description, price, stock) VALUES
 (1, 'Pulse Meter', 'Alat Fisiologi - sewa per minggu', 10000, 4),
 (2, 'Blood Pressure Monitor', 'Alat Fisiologi - sewa per minggu', 10000, 5),
