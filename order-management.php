@@ -166,7 +166,7 @@ function dt_order_status_class($status) {
         <section class="surface-card">
             <div class="surface-card-body">
                 <div class="dt-table-wrap">
-                    <table id="orderTable" class="dt-table">
+                    <table id="orderTable" class="dt-table dt-mobile-list">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -181,16 +181,16 @@ function dt_order_status_class($status) {
                             <?php foreach ($orders as $row): ?>
                                 <?php $badgeClass = dt_order_status_class($row['status']); ?>
                                 <tr>
-                                    <td class="cell-mono">#<?php echo (int)$row['id']; ?></td>
-                                    <td class="cell-strong"><?php echo htmlspecialchars($row['username']); ?></td>
-                                    <td class="cell-mono"><?php echo htmlspecialchars($row['created_at']); ?></td>
-                                    <td class="cell-mono">Rp <?php echo number_format((float)$row['total_amount'], 0, ',', '.'); ?></td>
-                                    <td>
+                                    <td class="cell-mono col-primary" data-label="ID">Peminjaman #<?php echo (int)$row['id']; ?></td>
+                                    <td class="cell-strong" data-label="Peminjam"><?php echo htmlspecialchars($row['username']); ?></td>
+                                    <td class="cell-mono" data-label="Tanggal"><?php echo htmlspecialchars($row['created_at']); ?></td>
+                                    <td class="cell-mono" data-label="Total Biaya">Rp <?php echo number_format((float)$row['total_amount'], 0, ',', '.'); ?></td>
+                                    <td data-label="Status">
                                         <span class="status-badge <?php echo $badgeClass; ?>">
                                             <?php echo htmlspecialchars($row['status']); ?>
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="col-actions" data-label="Aksi">
                                         <?php if ($row['status'] == 'Pending'): ?>
                                             <a href="order-management.php?confirm_peminjaman=<?php echo (int)$row['id']; ?>" class="btn-brand btn-sm-action">
                                                 <i class="fas fa-check"></i> Konfirmasi Peminjaman

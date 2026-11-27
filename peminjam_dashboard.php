@@ -100,7 +100,7 @@ if ($result && $result->num_rows > 0) {
 
             <div class="surface-card-body">
                 <div class="dt-table-wrap">
-                    <table id="peminjamanTable" class="dt-table">
+                    <table id="peminjamanTable" class="dt-table dt-mobile-list">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -119,12 +119,12 @@ if ($result && $result->num_rows > 0) {
                                     $stock = (int)($row['stock'] ?? 0);
                                     $stockClass = $stock <= 0 ? 'empty' : ($stock <= 2 ? 'low' : '');
                                     echo "<tr class='product-row'>
-                                            <td class='cell-mono'>" . $no++ . "</td>
-                                            <td class='cell-strong'>" . htmlspecialchars($row['name']) . "</td>
-                                            <td>" . htmlspecialchars($row['description']) . "</td>
-                                            <td><span class='stock-pill {$stockClass}'>{$stock} unit</span></td>
-                                            <td class='cell-mono'>Rp " . number_format($row['price'], 0, ',', '.') . "</td>
-                                            <td>
+                                            <td class='cell-mono col-index' data-label='No'>" . $no++ . "</td>
+                                            <td class='cell-strong col-primary' data-label='Nama Alat'>" . htmlspecialchars($row['name']) . "</td>
+                                            <td data-label='Deskripsi'>" . htmlspecialchars($row['description']) . "</td>
+                                            <td data-label='Stok'><span class='stock-pill {$stockClass}'>{$stock} unit</span></td>
+                                            <td class='cell-mono' data-label='Harga / Minggu'>Rp " . number_format($row['price'], 0, ',', '.') . "</td>
+                                            <td class='col-actions' data-label='Aksi'>
                                                 <button type='button' class='btn-brand btn-sm-action' onclick='addToCart(" . (int)$row['id'] . ")'>
                                                     <i class='fas fa-cart-plus'></i> Tambah
                                                 </button>

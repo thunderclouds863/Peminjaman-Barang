@@ -354,10 +354,21 @@ body.app-body {
   flex-shrink: 0;
 }
 
-.metric-chip .dot.crimson { background: var(--brand-crimson); }
-.metric-chip .dot.amber { background: var(--warning-dot); }
-.metric-chip .dot.blue { background: var(--info-dot); }
-.metric-chip .dot.emerald { background: var(--success-dot); }
+.metric-chip .dot.crimson {
+  background: var(--brand-crimson);
+}
+
+.metric-chip .dot.amber {
+  background: var(--warning-dot);
+}
+
+.metric-chip .dot.blue {
+  background: var(--info-dot);
+}
+
+.metric-chip .dot.emerald {
+  background: var(--success-dot);
+}
 
 /* Asymmetric Divisi Hub */
 .divisi-split {
@@ -497,7 +508,7 @@ body.app-body {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 700px) {
   .divisi-banner {
     padding: 26px 22px;
   }
@@ -943,6 +954,7 @@ table.dataTable.no-footer {
   background: var(--warning-bg);
   color: var(--warning-text);
 }
+
 .status-pending::before {
   background: var(--warning-dot);
 }
@@ -951,6 +963,7 @@ table.dataTable.no-footer {
   background: var(--indigo-bg);
   color: var(--indigo-text);
 }
+
 .status-dikonfirmasi::before {
   background: var(--indigo-dot);
 }
@@ -959,6 +972,7 @@ table.dataTable.no-footer {
   background: var(--violet-bg);
   color: var(--violet-text);
 }
+
 .status-menunggu-pembayaran::before {
   background: var(--violet-dot);
 }
@@ -967,6 +981,7 @@ table.dataTable.no-footer {
   background: var(--cyan-bg);
   color: var(--cyan-text);
 }
+
 .status-siap-diambil::before {
   background: var(--cyan-dot);
 }
@@ -975,6 +990,7 @@ table.dataTable.no-footer {
   background: var(--info-bg);
   color: var(--info-text);
 }
+
 .status-sedang-dipinjam::before {
   background: var(--info-dot);
 }
@@ -983,6 +999,7 @@ table.dataTable.no-footer {
   background: #fff4ed;
   color: #b93815;
 }
+
 .status-menunggu-pengembalian::before {
   background: #ef6820;
 }
@@ -991,6 +1008,7 @@ table.dataTable.no-footer {
   background: #f0fdf9;
   color: #0e7490;
 }
+
 .status-pengembalian-dikonfirmasi::before {
   background: #14b8a6;
 }
@@ -999,6 +1017,7 @@ table.dataTable.no-footer {
   background: var(--success-bg);
   color: var(--success-text);
 }
+
 .status-selesai::before {
   background: var(--success-dot);
 }
@@ -1412,6 +1431,7 @@ body.auth-body {
 
 /* Keep injected demo account box unobtrusive & non-overlapping on small screens */
 @media (max-width: 768px) {
+
   body.auth-body,
   body.auth-stage {
     gap: 12px;
@@ -1968,10 +1988,21 @@ body.auth-body {
   flex-shrink: 0;
 }
 
-.metric-chip .dot.crimson { background: var(--brand-crimson); }
-.metric-chip .dot.amber { background: var(--warning-dot); }
-.metric-chip .dot.blue { background: var(--info-dot); }
-.metric-chip .dot.emerald { background: var(--success-dot); }
+.metric-chip .dot.crimson {
+  background: var(--brand-crimson);
+}
+
+.metric-chip .dot.amber {
+  background: var(--warning-dot);
+}
+
+.metric-chip .dot.blue {
+  background: var(--info-dot);
+}
+
+.metric-chip .dot.emerald {
+  background: var(--success-dot);
+}
 
 .metric-chip {
   display: inline-flex;
@@ -2162,7 +2193,7 @@ body.auth-body {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 700px) {
   .app-header-inner {
     padding: 0 16px;
     min-height: 64px;
@@ -2283,9 +2314,10 @@ body.auth-body {
   outline-offset: 2px;
 }
 
-/* Desktop Segmented Nav Track */
-@media (min-width: 769px) {
+/* Desktop & Tablet Segmented Nav Track */
+@media (min-width: 701px) {
   .app-nav {
+    display: flex;
     background: var(--surface-subtle);
     border: 1px solid var(--border-subtle);
     border-radius: 11px;
@@ -2311,6 +2343,40 @@ body.auth-body {
   }
 }
 
+/* Tablet refinement (701px–960px): keep top segmented nav crisp on one row */
+@media (min-width: 701px) and (max-width: 960px) {
+  .app-header-inner {
+    padding: 0 18px;
+    gap: 12px;
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+  .role-pill {
+    display: none;
+  }
+
+  .app-nav a {
+    padding: 6px 10px;
+    font-size: 12.5px;
+    gap: 6px;
+  }
+
+  table.dt-table thead th,
+  table.dt-table tbody td {
+    padding: 11px 10px !important;
+    font-size: 12.5px;
+  }
+
+  table.dt-table th:first-child:has(+ th),
+  table.dt-table td.col-index {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
+
 /* Mobile Compact Logout & Bottom Tab Bar */
 .header-mobile-logout {
   display: none;
@@ -2325,6 +2391,7 @@ body.auth-body {
   font-size: 12.5px;
   font-weight: 600;
   text-decoration: none;
+  min-height: 36px;
 }
 
 .header-mobile-logout:hover {
@@ -2337,13 +2404,26 @@ body.auth-body {
   display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 700px) {
+  .app-header-inner {
+    padding: 0 16px;
+    min-height: 60px;
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+  .app-nav {
+    display: none !important;
+  }
+
   body.has-bottom-nav {
-    padding-bottom: 74px;
+    padding-bottom: 84px;
   }
 
   body.has-bottom-nav .nav-toggle {
-    display: none;
+    display: none !important;
   }
 
   body.has-bottom-nav .header-mobile-logout {
@@ -2359,11 +2439,11 @@ body.auth-body {
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: 1fr;
-    background: rgba(255, 255, 255, 0.96);
+    background: rgba(255, 255, 255, 0.97);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid var(--border-subtle);
-    box-shadow: 0 -4px 18px rgba(17, 19, 24, 0.06);
+    box-shadow: 0 -4px 18px rgba(17, 19, 24, 0.07);
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
   }
 
@@ -2390,6 +2470,205 @@ body.auth-body {
   .mobile-bottom-nav a.active {
     color: var(--brand-crimson);
     background: var(--brand-crimson-soft);
+  }
+
+  /* ======================================================================
+     Mobile Reconstructed Structured Data Lists (replaces clipped tables)
+     ====================================================================== */
+  .dt-table-wrap {
+    overflow-x: visible;
+  }
+
+  table.dt-table.dt-mobile-list,
+  table.dt-table.dt-mobile-list tbody,
+  table.dt-table.dt-mobile-list tr,
+  table.dt-table.dt-mobile-list td {
+    display: block;
+    width: 100% !important;
+  }
+
+  table.dt-table.dt-mobile-list thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  table.dt-table.dt-mobile-list tbody tr {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  table.dt-table.dt-mobile-list tbody tr:first-child {
+    padding-top: 4px;
+  }
+
+  table.dt-table.dt-mobile-list tbody tr:last-child {
+    border-bottom: none;
+    padding-bottom: 4px;
+  }
+
+  table.dt-table.dt-mobile-list tbody tr:hover {
+    background-color: transparent !important;
+  }
+
+  table.dt-table.dt-mobile-list tbody td {
+    padding: 2px 0 !important;
+    border: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    text-align: right;
+    font-size: 13.5px;
+    white-space: normal;
+  }
+
+  table.dt-table.dt-mobile-list tbody td::before {
+    content: attr(data-label);
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink-500);
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  table.dt-table.dt-mobile-list tbody td.col-index {
+    display: none;
+  }
+
+  table.dt-table.dt-mobile-list tbody td.col-primary {
+    justify-content: flex-start;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink-950);
+    padding-bottom: 2px !important;
+  }
+
+  table.dt-table.dt-mobile-list tbody td.col-primary::before {
+    display: none;
+  }
+
+  table.dt-table.dt-mobile-list tbody td.col-actions {
+    margin-top: 6px;
+    padding-top: 10px !important;
+    border-top: 1px dashed var(--border-subtle) !important;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  table.dt-table.dt-mobile-list tbody td.col-actions::before {
+    display: none;
+  }
+
+  table.dt-table.dt-mobile-list tbody td.col-actions .cell-actions,
+  table.dt-table.dt-mobile-list tbody td.col-actions form {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  table.dt-table.dt-mobile-list tbody td.col-actions .btn-sm-action {
+    min-height: 38px;
+    padding: 8px 14px;
+    font-size: 13px;
+    flex: 1 1 auto;
+  }
+
+  table.dt-table.dt-mobile-list tbody td.dataTables_empty {
+    justify-content: center;
+    text-align: center;
+    padding: 24px 12px !important;
+  }
+
+  table.dt-table.dt-mobile-list tbody td.dataTables_empty::before {
+    display: none;
+  }
+
+  /* Clean mobile DataTables pagination & info */
+  .dataTables_wrapper .dataTables_info,
+  .dataTables_wrapper .dataTables_paginate {
+    float: none !important;
+    text-align: center !important;
+    width: 100%;
+  }
+
+  .dataTables_wrapper .dataTables_paginate {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding-top: 10px !important;
+  }
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button {
+    min-height: 36px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    margin: 0 !important;
+  }
+
+  /* Modals fit mobile viewport cleanly */
+  .dt-modal {
+    max-height: calc(100vh - 32px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dt-modal-body {
+    overflow-y: auto;
+  }
+}
+
+/* Narrow Mobile (360px–420px) Reconstruction */
+@media (max-width: 420px) {
+  .auth-topbar {
+    padding: 14px 14px 0;
+  }
+
+  .auth-panel {
+    padding: 22px 16px 20px;
+  }
+
+  .app-main {
+    padding: 16px 12px 32px;
+  }
+
+  .page-actions {
+    width: 100%;
+  }
+
+  .page-actions > a,
+  .page-actions > button {
+    flex: 1 1 auto;
+  }
+
+  .flow-track {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .modal-grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .meta-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -2470,6 +2749,7 @@ body.auth-body {
 
 /* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
