@@ -58,10 +58,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['action'] != 'bayar') {
         $new_file_name = 'bukti' . $peminjaman_id . '.' . $file_extension;
         $upload_path = $upload_dir . $new_file_name;
 
-        if (move_uploaded_file($payment_proof['tmp_name'], $upload_path)) {
+        $stored_proof = function_exists('demo_upload_store')
+            ? demo_upload_store($payment_proof['tmp_name'], $upload_path, 'peminjaman/proofs/' . $new_file_name, $new_file_name)
+            : (move_uploaded_file($payment_proof['tmp_name'], $upload_path) ? $new_file_name : null);
+
+        if ($stored_proof !== null) {
             $update_status = "UPDATE peminjaman SET status = 'Menunggu Konfirmasi Pembayaran', payment_method = ?, payment_proof = ? WHERE id = ?";
             $stmt_update = $conn->prepare($update_status);
-            $stmt_update->bind_param("ssi", $metode_pembayaran, $file_data, $peminjaman_id);
+            $stmt_update->bind_param("ssi", $metode_pembayaran, $stored_proof, $peminjaman_id);
             $stmt_update->execute();
 
             header("Location: home.php");

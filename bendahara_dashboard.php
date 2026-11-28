@@ -48,9 +48,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['upload_payment_proof']
         $new_file_name = 'bukti' . $peminjaman_id . '.' . $file_extension;
         $upload_path = $upload_dir . $new_file_name;
 
-        if (move_uploaded_file($file_tmp, $upload_path)) {
-            $update_payment_query = "UPDATE peminjaman SET payment_proof='$new_file_name' WHERE id=$peminjaman_id";
-            if (mysqli_query($conn, $update_payment_query)) {
+        $stored_proof = function_exists('demo_upload_store')
+            ? demo_upload_store($file_tmp, $upload_path, 'peminjaman/proofs/' . $new_file_name, $new_file_name)
+            : (move_uploaded_file($file_tmp, $upload_path) ? $new_file_name : null);
+
+        if ($stored_proof !== null) {
+            $stmt_pay = $conn->prepare("UPDATE peminjaman SET payment_proof = ? WHERE id = ?");
+            $pid_int = (int) $peminjaman_id;
+            $stmt_pay->bind_param("si", $stored_proof, $pid_int);
+            if ($stmt_pay->execute()) {
                 header("Location: bendahara_dashboard.php");
                 exit();
             } else {
@@ -166,13 +172,20 @@ if ($result) {
                                         $allowed_extensions = ['png', 'jpg', 'jpeg'];
                                         $file_found = false;
                                         $file_path = '';
-                                        foreach ($allowed_extensions as $ext) {
-                                            $file_name = 'bukti' . $peminjaman_id . '.' . $ext;
-                                            $candidate = $upload_dir . $file_name;
-                                            if (file_exists($candidate)) {
-                                                $file_found = true;
-                                                $file_path = $candidate;
-                                                break;
+                                        $storedProofVal = trim((string)($row['payment_proof'] ?? ''));
+                                        if ($storedProofVal !== '' && preg_match('#^https?://#i', $storedProofVal)) {
+                                            $file_found = true;
+                                            $file_path = $storedProofVal;
+                                        }
+                                        if (!$file_found) {
+                                            foreach ($allowed_extensions as $ext) {
+                                                $file_name = 'bukti' . $peminjaman_id . '.' . $ext;
+                                                $candidate = $upload_dir . $file_name;
+                                                if (file_exists($candidate)) {
+                                                    $file_found = true;
+                                                    $file_path = $candidate;
+                                                    break;
+                                                }
                                             }
                                         }
 
