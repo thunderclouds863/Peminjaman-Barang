@@ -6,7 +6,7 @@ $username = "root";
 $password = "";
 $dbname = "peminjaman_alat";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = demo_mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die(json_encode(['success' => false, 'message' => 'Database connection failed']));
 }

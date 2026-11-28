@@ -9,7 +9,7 @@ $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "peminjaman_alat";
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = demo_mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);

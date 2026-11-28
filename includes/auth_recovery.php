@@ -11,7 +11,7 @@ function dt_db_connect(): mysqli {
     $password   = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
     $dbname     = getenv('DB_NAME') ?: 'peminjaman_alat';
 
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    $conn = demo_mysqli($servername, $username, $password, $dbname);
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
